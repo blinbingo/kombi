@@ -1,0 +1,145 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #0f172a;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+button {
+  border: none;
+  padding: 10px 20px;
+  background-color: #17530b;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 5px;
+}
+
+button:hover {
+  background-color: #218c16;
+}
+
+.card {
+  background: linear-gradient(135deg, #0f172a, #14532d);
+  border: 2px solid #00ff00;
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 0 15px #00ff00;
+}
+
+input[type="number"] {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 2px solid #00ff00;
+  background-color: #000;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.bingo-board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.bola {
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  border-radius: 50%;
+  background-color: #1e293b;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: 2px solid #00ff00;
+  transition: all 0.2s ease-in-out;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bola.selecionada {
+  background-color: gold;
+  color: black;
+  border: 2px solid gold;
+  box-shadow: 0 0 10px gold;
+}
+
+.simulador-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.cartelas-container {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.cartelas-container h3 {
+  text-align: center;
+}
+
+.controles {
+  margin-top: 20px;
+}
+
+/* Estilo do cronômetro digital */
+.cronometro-digital {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  color: #0f0;
+  background-color: #000;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #0f0;
+}
+
+.ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+  justify-items: center;
+}
+
+.ranking-card {
+  background-color: #001f1f;
+  border: 2px solid #00ff99;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 180px;
+  min-height: 90px;
+  box-sizing: border-box;
+  color: white;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 0.75rem;
+  position: relative;
+}
+
+.ranking-card strong {
+  color: #00ff99;
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+}
+
+.ranking-card-title {
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-bottom: 2px;
+}

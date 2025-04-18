@@ -35,9 +35,9 @@ export default function SimuladorBingo({
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 
-  const salvarSorteio = async () => {
+  const salvarSorteio = async (premiadasReais) => {
     const totalPremiosPagos = [25, 50, 75, 100].reduce(
-      (acc, meta) => acc + (premios[meta]?.length || 0) * valorPremios[meta],
+      (acc, meta) => acc + (premiadasReais[meta]?.length || 0) * valorPremios[meta],
       0
     );
 
@@ -117,7 +117,7 @@ export default function SimuladorBingo({
       jaParouNo100.current = true;
       setSorteando(false);
       setContador(null);
-      salvarSorteio();
+      salvarSorteio(novosPremios);
     }
   };
 
@@ -179,14 +179,13 @@ export default function SimuladorBingo({
     );
     setBolasSelecionadas(bolas);
     setPremios(premiadas);
-    setBolasPremioDesbloqueadas(desbloqueios);
-    setEtapasAlcancadas(etapas);
-    setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
+    setBolasPremioDesbloqueadas(dis...
+setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     jaParouNo100.current = true;
     setSorteando(false);
     setContador(null);
     setPausado(false);
-    salvarSorteio();
+    salvarSorteio(premiadas);
   };
 
   const reiniciarTudo = () => {
@@ -207,10 +206,7 @@ export default function SimuladorBingo({
     <div className="body" style={{ textAlign: "center" }}>
       <div className="bingo-board">
         {numeros.map((num) => (
-          <div
-            key={num}
-            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
-          >
+          <div key={num} className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}>
             {num}
           </div>
         ))}

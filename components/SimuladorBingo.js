@@ -4,8 +4,8 @@ import { supabase } from '../utils/supabaseClient';
 const SimuladorBingo = () => {
   const [dadosSorteio, setDadosSorteio] = useState(null);
   const [sorteioFinalizado, setSorteioFinalizado] = useState(false);
+  const [mensagem, setMensagem] = useState('');
 
-  // Exemplo de dados fictícios de sorteio (substituir pelos reais do seu app)
   const exemploDados = {
     quantidadeCartelas: 1200,
     valorCartela: 5.0,
@@ -23,15 +23,17 @@ const SimuladorBingo = () => {
       const { error } = await supabase.from('bingo').insert([dados]);
       if (error) {
         console.error('Erro ao salvar no Supabase:', error.message);
+        setMensagem('❌ Erro ao salvar sorteio.');
       } else {
         console.log('Sorteio salvo com sucesso!');
+        setMensagem('✅ Sorteio salvo com sucesso!');
       }
     } catch (err) {
       console.error('Erro inesperado ao salvar sorteio:', err);
+      setMensagem('❌ Erro inesperado ao salvar sorteio.');
     }
   };
 
-  // Exemplo de uso: salvar quando finalizar o sorteio
   useEffect(() => {
     if (sorteioFinalizado) {
       salvarSorteio(dadosSorteio);
@@ -39,16 +41,31 @@ const SimuladorBingo = () => {
   }, [sorteioFinalizado]);
 
   return (
-    <div>
+    <div style={{ textAlign: 'center', padding: '2rem' }}>
       <h1>Simulador de Bingo</h1>
       <button
         onClick={() => {
+          setMensagem('');
           setDadosSorteio(exemploDados);
           setSorteioFinalizado(true);
+        }}
+        style={{
+          backgroundColor: 'darkgreen',
+          color: 'white',
+          padding: '10px 20px',
+          borderRadius: '8px',
+          border: '2px solid white',
+          cursor: 'pointer',
+          fontSize: '1rem'
         }}
       >
         Finalizar Sorteio (e Salvar)
       </button>
+      {mensagem && (
+        <p style={{ marginTop: '20px', fontWeight: 'bold', color: mensagem.includes('✅') ? 'limegreen' : 'red' }}>
+          {mensagem}
+        </p>
+      )}
     </div>
   );
 };

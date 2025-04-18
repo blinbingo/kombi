@@ -35,20 +35,38 @@ export default function SimuladorBingo({
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
   const salvarSorteio = async () => {
-    const dados = {
-      quantidadeCartelas: cartelas.length,
-      valorCartela,
-      premio25: valorPremios[25],
-      premio50: valorPremios[50],
-      premio75: valorPremios[75],
-      premio100: valorPremios[100],
-      totalArrecadado: cartelas.length * valorCartela,
-      totalPremiosPagos: [25, 50, 75, 100].reduce(
-        (acc, p) => acc + (premios[p]?.length || 0) * valorPremios[p],
-        0
-      ),
-      codigoSorteio: gerarCodigoSorteio(),
-    };
+  const totalPremiosPagos = [25, 50, 75, 100].reduce(
+    (acc, meta) => acc + (premios[meta]?.length || 0) * valorPremios[meta],
+    0
+  );
+
+  const dados = {
+    quantidadeCartelas: cartelas.length,
+    valorCartela,
+    premio25: valorPremios[25],
+    premio50: valorPremios[50],
+    premio75: valorPremios[75],
+    premio100: valorPremios[100],
+    totalArrecadado: cartelas.length * valorCartela,
+    totalPremiosPagos,
+    codigoSorteio: gerarCodigoSorteio(),
+  };
+
+  try {
+    const { error } = await supabase.from("bingo").insert([dados]);
+    if (error) {
+      console.error("Erro ao salvar no Supabase:", error.message);
+      setMensagem("❌ Erro ao salvar sorteio.");
+    } else {
+      console.log("Sorteio salvo com sucesso!");
+      setMensagem("✅ Sorteio salvo com sucesso!");
+    }
+  } catch (err) {
+    console.error("Erro inesperado ao salvar sorteio:", err);
+    setMensagem("❌ Erro inesperado ao salvar sorteio.");
+  }
+};
+
 
     try {
       const { error } = await supabase.from("bingo").insert([dados]);

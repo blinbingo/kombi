@@ -16,7 +16,7 @@ export default function SimuladorBingo({
   const [sorteando, setSorteando] = useState(false);
   const [pausado, setPausado] = useState(false);
   const [premios, setPremios] = useState({ 25: [], 50: [], 75: [], 100: [] });
-  const [etapasAlcancancadas, setEtapasAlcancadas] = useState([]);
+  const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);

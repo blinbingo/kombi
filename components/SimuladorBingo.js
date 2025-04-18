@@ -34,7 +34,6 @@ export default function SimuladorBingo({
     const segundo = String(agora.getSeconds()).padStart(2, '0');
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
-
   const salvarSorteio = async (premiadasReais) => {
     const totalPremiosPagos = [25, 50, 75, 100].reduce(
       (acc, meta) => acc + (premiadasReais[meta]?.length || 0) * valorPremios[meta],
@@ -77,7 +76,6 @@ export default function SimuladorBingo({
     setBolasSelecionadas(novas);
     atualizarPremios(novas);
   };
-
   const atualizarPremios = (bolas) => {
     const metas = [25, 50, 75, 100];
     const novaBola = bolas[bolas.length - 1];
@@ -117,10 +115,9 @@ export default function SimuladorBingo({
       jaParouNo100.current = true;
       setSorteando(false);
       setContador(null);
-      salvarSorteio(novosPremios);
+      salvarSorteio(novosPremios); // agora com dados REAIS no momento certo
     }
   };
-
   useEffect(() => {
     let timer;
     if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
@@ -180,14 +177,13 @@ export default function SimuladorBingo({
     setBolasSelecionadas(bolas);
     setPremios(premiadas);
     setBolasPremioDesbloqueadas(dis...
-setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
+    setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     jaParouNo100.current = true;
     setSorteando(false);
     setContador(null);
     setPausado(false);
     salvarSorteio(premiadas);
   };
-
   const reiniciarTudo = () => {
     setBolasSelecionadas([]);
     setPremios({ 25: [], 50: [], 75: [], 100: [] });
@@ -206,7 +202,10 @@ setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     <div className="body" style={{ textAlign: "center" }}>
       <div className="bingo-board">
         {numeros.map((num) => (
-          <div key={num} className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}>
+          <div
+            key={num}
+            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
+          >
             {num}
           </div>
         ))}

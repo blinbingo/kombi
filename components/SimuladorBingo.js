@@ -34,39 +34,24 @@ export default function SimuladorBingo({
     const segundo = String(agora.getSeconds()).padStart(2, '0');
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
+
   const salvarSorteio = async () => {
-  const totalPremiosPagos = [25, 50, 75, 100].reduce(
-    (acc, meta) => acc + (premios[meta]?.length || 0) * valorPremios[meta],
-    0
-  );
+    const totalPremiosPagos = [25, 50, 75, 100].reduce(
+      (acc, meta) => acc + (premios[meta]?.length || 0) * valorPremios[meta],
+      0
+    );
 
-  const dados = {
-    quantidadeCartelas: cartelas.length,
-    valorCartela,
-    premio25: valorPremios[25],
-    premio50: valorPremios[50],
-    premio75: valorPremios[75],
-    premio100: valorPremios[100],
-    totalArrecadado: cartelas.length * valorCartela,
-    totalPremiosPagos,
-    codigoSorteio: gerarCodigoSorteio(),
-  };
-
-  try {
-    const { error } = await supabase.from("bingo").insert([dados]);
-    if (error) {
-      console.error("Erro ao salvar no Supabase:", error.message);
-      setMensagem("❌ Erro ao salvar sorteio.");
-    } else {
-      console.log("Sorteio salvo com sucesso!");
-      setMensagem("✅ Sorteio salvo com sucesso!");
-    }
-  } catch (err) {
-    console.error("Erro inesperado ao salvar sorteio:", err);
-    setMensagem("❌ Erro inesperado ao salvar sorteio.");
-  }
-};
-
+    const dados = {
+      quantidadeCartelas: cartelas.length,
+      valorCartela,
+      premio25: valorPremios[25],
+      premio50: valorPremios[50],
+      premio75: valorPremios[75],
+      premio100: valorPremios[100],
+      totalArrecadado: cartelas.length * valorCartela,
+      totalPremiosPagos,
+      codigoSorteio: gerarCodigoSorteio(),
+    };
 
     try {
       const { error } = await supabase.from("bingo").insert([dados]);
@@ -92,6 +77,7 @@ export default function SimuladorBingo({
     setBolasSelecionadas(novas);
     atualizarPremios(novas);
   };
+
   const atualizarPremios = (bolas) => {
     const metas = [25, 50, 75, 100];
     const novaBola = bolas[bolas.length - 1];
@@ -131,9 +117,10 @@ export default function SimuladorBingo({
       jaParouNo100.current = true;
       setSorteando(false);
       setContador(null);
-      salvarSorteio(); // AQUI É O MOMENTO SUPABASE FINAL!
+      salvarSorteio();
     }
   };
+
   useEffect(() => {
     let timer;
     if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
@@ -167,11 +154,11 @@ export default function SimuladorBingo({
       if (disponiveis.length === 0) break;
       const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
       bolas.push(nova);
-      [25, 50, 75, 100].forEach((meta) => {
+      [25, 50, 75, 100].forEach(meta => {
         if (!etapas.includes(meta)) {
           const ganhadoras = [];
           cartelas.forEach((cartela, index) => {
-            const acertos = cartela.filter((num) => bolas.includes(num));
+            const acertos = cartela.filter(num => bolas.includes(num));
             const porcentagem = Math.floor((acertos.length / 24) * 100);
             if (porcentagem >= meta && cartela.includes(nova)) {
               ganhadoras.push("C" + String(index + 1).padStart(4, "0"));
@@ -199,7 +186,7 @@ export default function SimuladorBingo({
     setSorteando(false);
     setContador(null);
     setPausado(false);
-    salvarSorteio(); // SUPABASE AQUI TAMBÉM
+    salvarSorteio();
   };
 
   const reiniciarTudo = () => {
@@ -215,15 +202,14 @@ export default function SimuladorBingo({
     jaParouNo100.current = false;
     setMensagem("");
   };
+
   return (
     <div className="body" style={{ textAlign: "center" }}>
       <div className="bingo-board">
         {numeros.map((num) => (
           <div
             key={num}
-            className={`bola ${
-              bolasSelecionadas.includes(num) ? "selecionada" : ""
-            }`}
+            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
           >
             {num}
           </div>
@@ -247,21 +233,9 @@ export default function SimuladorBingo({
       )}
 
       <h3>Histórico</h3>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          gap: "6px",
-          marginTop: "10px",
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px", marginTop: "10px" }}>
         {bolasSelecionadas.map((bola, i) => (
-          <div
-            key={i}
-            className="bola"
-            style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}
-          >
+          <div key={i} className="bola" style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}>
             {bola}
           </div>
         ))}
@@ -279,13 +253,7 @@ export default function SimuladorBingo({
       />
 
       {mensagem && (
-        <div
-          style={{
-            marginTop: "20px",
-            textAlign: "center",
-            color: mensagem.includes("✅") ? "limegreen" : "red",
-          }}
-        >
+        <div style={{ marginTop: "20px", textAlign: "center", color: mensagem.includes("✅") ? "limegreen" : "red" }}>
           <strong>{mensagem}</strong>
         </div>
       )}

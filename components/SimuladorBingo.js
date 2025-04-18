@@ -35,7 +35,6 @@ export default function SimuladorBingo({
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 
-
   const salvarSorteio = async (premiadasReais) => {
     const totalPremiosPagos = [25, 50, 75, 100].reduce(
       (acc, meta) => acc + (premiadasReais[meta]?.length || 0) * valorPremios[meta],
@@ -118,7 +117,7 @@ export default function SimuladorBingo({
       jaParouNo100.current = true;
       setSorteando(false);
       setContador(null);
-      salvarSorteio(novosPremios); // usando os dados finais e reais!
+      salvarSorteio(novosPremios);
     }
   };
 
@@ -181,7 +180,7 @@ export default function SimuladorBingo({
     );
     setBolasSelecionadas(bolas);
     setPremios(premiadas);
-    setBolasPremioDesbloqueadas(dis...
+    setBolasPremioDesbloqueadas(desbloqueios);
     setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     jaParouNo100.current = true;
     setSorteando(false);
@@ -189,6 +188,7 @@ export default function SimuladorBingo({
     setPausado(false);
     salvarSorteio(premiadas);
   };
+
   const reiniciarTudo = () => {
     setBolasSelecionadas([]);
     setPremios({ 25: [], 50: [], 75: [], 100: [] });
@@ -257,3 +257,13 @@ export default function SimuladorBingo({
 
       {mensagem && (
         <div style={{
+          marginTop: "20px",
+          textAlign: "center",
+          color: mensagem.includes("✅") ? "limegreen" : "red"
+        }}>
+          <strong>{mensagem}</strong>
+        </div>
+      )}
+    </div>
+  );
+}

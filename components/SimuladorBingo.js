@@ -1,10 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
+import PainelControle from './PainelControle';
+import HistoricoBolas from './HistoricoBolas';
+import CartelasPremiadas from './CartelasPremiadas';
+import RankingCartelas from './RankingCartelas';
 
-const SimuladorBingo = () => {
-  const [bolasSelecionadas, setBolasSelecionadas] = useState([]);
+const SimuladorBingo = ({ cartelas, config }) => {
+  const [bolasSorteadas, setBolasSorteadas] = useState([]);
   const [mensagem, setMensagem] = useState('');
-  const [sorteioFinalizado, setSorteioFinalizado] = useState(false);
+  const [finalizado, setFinalizado] = useState(false);
+
+  useEffect(() => {
+    if (finalizado) {
+      salvarSorteio();
+    }
+  }, [finalizado]);
 
   const gerarCodigoSorteio = () => {
     const agora = new Date();
@@ -17,7 +27,20 @@ const SimuladorBingo = () => {
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 
-  const salvarSorteio = async (dados) => {
+  const salvarSorteio = async () => {
+    const dados = {
+      quantidadeCartelas: cartelas.length,
+      valorCartela: config.valorCartela,
+      premio25: config.premio25,
+      premio50: config.premio50,
+      premio75: config.premio75,
+      premio100: config.premio100,
+      totalArrecadado: cartelas.length * config.valorCartela,
+      totalPremiosPagos:
+        config.premio25 + config.premio50 + config.premio75 + config.premio100,
+      codigoSorteio: gerarCodigoSorteio(),
+    };
+
     try {
       const { error } = await supabase.from('bingo').insert([dados]);
       if (error) {
@@ -33,51 +56,21 @@ const SimuladorBingo = () => {
     }
   };
 
-  const finalizarSorteio = () => {
-    const dados = {
-      quantidadeCartelas: 1200,
-      valorCartela: 5.0,
-      premio25: 100.0,
-      premio50: 150.0,
-      premio75: 200.0,
-      premio100: 300.0,
-      totalArrecadado: 6000.0,
-      totalPremiosPagos: 750.0,
-      codigoSorteio: gerarCodigoSorteio(),
-    };
-    salvarSorteio(dados);
-    setSorteioFinalizado(true);
-  };
-
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1 style={{ color: 'white' }}>Simulador de Bingo</h1>
-
-      <button
-        onClick={finalizarSorteio}
-        style={{
-          backgroundColor: 'green',
-          color: 'white',
-          padding: '10px 20px',
-          fontSize: '1rem',
-          borderRadius: '8px',
-          border: '2px solid white',
-          cursor: 'pointer',
-        }}
-      >
-        Finalizar Sorteio (e Salvar)
-      </button>
+    <div className="simulador">
+      <PainelControle
+        bolasSorteadas={bolasSorteadas}
+        setBolasSorteadas={setBolasSorteadas}
+        setFinalizado={setFinalizado}
+      />
+      <HistoricoBolas bolas={bolasSorteadas} />
+      <CartelasPremiadas cartelas={cartelas} bolas={bolasSorteadas} />
+      <RankingCartelas cartelas={cartelas} bolas={bolasSorteadas} />
 
       {mensagem && (
-        <p
-          style={{
-            marginTop: '20px',
-            fontWeight: 'bold',
-            color: mensagem.includes('✅') ? 'limegreen' : 'red',
-          }}
-        >
-          {mensagem}
-        </p>
+        <div style={{ marginTop: '20px', textAlign: 'center', color: mensagem.includes('✅') ? 'limegreen' : 'red' }}>
+          <strong>{mensagem}</strong>
+        </div>
       )}
     </div>
   );

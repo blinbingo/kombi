@@ -34,6 +34,8 @@ export default function SimuladorBingo({
     const segundo = String(agora.getSeconds()).padStart(2, '0');
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
+
+
   const salvarSorteio = async (premiadasReais) => {
     const totalPremiosPagos = [25, 50, 75, 100].reduce(
       (acc, meta) => acc + (premiadasReais[meta]?.length || 0) * valorPremios[meta],
@@ -76,6 +78,7 @@ export default function SimuladorBingo({
     setBolasSelecionadas(novas);
     atualizarPremios(novas);
   };
+
   const atualizarPremios = (bolas) => {
     const metas = [25, 50, 75, 100];
     const novaBola = bolas[bolas.length - 1];
@@ -115,9 +118,10 @@ export default function SimuladorBingo({
       jaParouNo100.current = true;
       setSorteando(false);
       setContador(null);
-      salvarSorteio(novosPremios); // agora com dados REAIS no momento certo
+      salvarSorteio(novosPremios); // usando os dados finais e reais!
     }
   };
+
   useEffect(() => {
     let timer;
     if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
@@ -169,6 +173,7 @@ export default function SimuladorBingo({
         }
       });
     }
+
     const totalArrecadado = cartelas.length * valorCartela;
     const totalPremiosPagos = [25, 50, 75, 100].reduce(
       (acc, p) => acc + (premiadas[p]?.length || 0) * valorPremios[p],
@@ -202,10 +207,7 @@ export default function SimuladorBingo({
     <div className="body" style={{ textAlign: "center" }}>
       <div className="bingo-board">
         {numeros.map((num) => (
-          <div
-            key={num}
-            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
-          >
+          <div key={num} className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}>
             {num}
           </div>
         ))}
@@ -228,7 +230,13 @@ export default function SimuladorBingo({
       )}
 
       <h3>Histórico</h3>
-      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px", marginTop: "10px" }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        gap: "6px",
+        marginTop: "10px"
+      }}>
         {bolasSelecionadas.map((bola, i) => (
           <div key={i} className="bola" style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}>
             {bola}
@@ -248,10 +256,4 @@ export default function SimuladorBingo({
       />
 
       {mensagem && (
-        <div style={{ marginTop: "20px", textAlign: "center", color: mensagem.includes("✅") ? "limegreen" : "red" }}>
-          <strong>{mensagem}</strong>
-        </div>
-      )}
-    </div>
-  );
-}
+        <div style={{

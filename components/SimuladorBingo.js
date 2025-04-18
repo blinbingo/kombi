@@ -14,7 +14,7 @@ const SimuladorBingo = () => {
     const hora = String(agora.getHours()).padStart(2, '0');
     const minuto = String(agora.getMinutes()).padStart(2, '0');
     const segundo = String(agora.getSeconds()).padStart(2, '0');
-    return \`BLIN-\${dia}\${mes}\${ano}-\${hora}\${minuto}\${segundo}\`;
+    return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 
   const salvarSorteio = async (dados) => {
@@ -52,8 +52,6 @@ const SimuladorBingo = () => {
   return (
     <div style={{ padding: '2rem', textAlign: 'center' }}>
       <h1 style={{ color: 'white' }}>Simulador de Bingo</h1>
-
-      {/* Aqui estariam seus painéis, bolas, cartelas, cronômetro, etc */}
 
       <button
         onClick={finalizarSorteio}

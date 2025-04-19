@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import useSorteio from "../hooks/useSorteio";
+import React, { useState, useEffect, useRef } from "react";
 import PainelControle from "./PainelControle";
 import CartelasPremiadas from "./CartelasPremiadas";
 import RankingCartelas from "./RankingCartelas";
@@ -12,31 +11,66 @@ export default function SimuladorBingo({
   valorPremios,
   titulo
 }) {
+  const [bolasSelecionadas, setBolasSelecionadas] = useState([]);
+  const [contador, setContador] = useState(null);
+  const [sorteando, setSorteando] = useState(false);
+  const [pausado, setPausado] = useState(false);
   const [premios, setPremios] = useState({ 25: [], 50: [], 75: [], 100: [] });
   const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
   const [mensagem, setMensagem] = useState("");
+  const jaParouNo100 = useRef(false);
+  const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
-  const {
-    bolasSelecionadas,
-    setBolasSelecionadas,
-    contador,
-    setContador,
-    sorteando,
-    setSorteando,
-    pausado,
-    setPausado,
-    jaParouNo100,
-    numeros,
-    iniciarSorteio,
-    reiniciarTudo
-  } = useSorteio(tempoDelay);
+  const gerarCodigoSorteio = () => {
+    const agora = new Date();
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const ano = agora.getFullYear();
+    const hora = String(agora.getHours()).padStart(2, '0');
+    const minuto = String(agora.getMinutes()).padStart(2, '0');
+    const segundo = String(agora.getSeconds()).padStart(2, '0');
+    return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
+  };
+
+  const salvarSorteio = async (premiadasReais) => {
+    const totalPremiosPagos = [25, 50, 75, 100].reduce(
+      (acc, meta) => acc + (premiadasReais[meta]?.length || 0) * valorPremios[meta],
+      0
+    );
+
+    const dados = {
+      quantidadeCartelas: cartelas.length,
+      valorCartela,
+      premio25: valorPremios[25],
+      premio50: valorPremios[50],
+      premio75: valorPremios[75],
+      premio100: valorPremios[100],
+      totalArrecadado: cartelas.length * valorCartela,
+      totalPremiosPagos,
+      codigoSorteio: gerarCodigoSorteio(),
+    };
+
+    try {
+      const { error } = await supabase.from("bingo").insert([dados]);
+      if (error) {
+        console.error("Erro ao salvar no Supabase:", error.message);
+        setMensagem("❌ Erro ao salvar sorteio.");
+      } else {
+        console.log("Sorteio salvo com sucesso!");
+        setMensagem("✅ Sorteio salvo com sucesso!");
+      }
+    } catch (err) {
+      console.error("Erro inesperado ao salvar sorteio:", err);
+      setMensagem("❌ Erro inesperado ao salvar sorteio.");
+    }
+  };
 
   const sortearBola = () => {
     if (jaParouNo100.current) return;
-    const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
+    const disponiveis = numeros.filter(n => !bolasSelecionadas.includes(n));
     if (disponiveis.length === 0) return;
     const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
     const novas = [...bolasSelecionadas, nova];
@@ -87,35 +121,25 @@ export default function SimuladorBingo({
     }
   };
 
-  const salvarSorteio = async (premiadasReais) => {
-    const totalPremiosPagos = [25, 50, 75, 100].reduce(
-      (acc, meta) => acc + (premiadasReais[meta]?.length || 0) * valorPremios[meta],
-      0
-    );
-
-    const dados = {
-      quantidadeCartelas: cartelas.length,
-      valorCartela,
-      premio25: valorPremios[25],
-      premio50: valorPremios[50],
-      premio75: valorPremios[75],
-      premio100: valorPremios[100],
-      totalArrecadado: cartelas.length * valorCartela,
-      totalPremiosPagos,
-      codigoSorteio: `BLIN-${new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14)}`
-    };
-
-    try {
-      const { error } = await supabase.from("bingo").insert([dados]);
-      if (error) {
-        console.error("Erro ao salvar no Supabase:", error.message);
-        setMensagem("❌ Erro ao salvar sorteio.");
+  useEffect(() => {
+    let timer;
+    if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
+      if (contador > 0) {
+        timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
       } else {
-        setMensagem("✅ Sorteio salvo com sucesso!");
+        sortearBola();
+        if (!jaParouNo100.current) {
+          setContador(tempoDelay);
+        }
       }
-    } catch (err) {
-      console.error("Erro inesperado ao salvar sorteio:", err);
-      setMensagem("❌ Erro inesperado ao salvar sorteio.");
+    }
+    return () => clearTimeout(timer);
+  }, [contador, sorteando, pausado]);
+
+  const iniciarSorteio = () => {
+    if (!sorteando) {
+      setSorteando(true);
+      setContador(tempoDelay);
     }
   };
 
@@ -156,13 +180,27 @@ export default function SimuladorBingo({
     );
     setBolasSelecionadas(bolas);
     setPremios(premiadas);
-   setBolasPremioDesbloqueadas(desbloqueios);
+    setBolasPremioDesbloqueadas(desbloqueios);
     setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     jaParouNo100.current = true;
     setSorteando(false);
     setContador(null);
     setPausado(false);
     salvarSorteio(premiadas);
+  };
+
+  const reiniciarTudo = () => {
+    setBolasSelecionadas([]);
+    setPremios({ 25: [], 50: [], 75: [], 100: [] });
+    setEtapasAlcancadas([]);
+    setBolasPremioDesbloqueadas({});
+    setResumoFinanceiro(null);
+    setSorteando(false);
+    setContador(null);
+    setPausado(false);
+    setMostrarConfirmacao(false);
+    jaParouNo100.current = false;
+    setMensagem("");
   };
 
   return (

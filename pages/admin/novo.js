@@ -13,17 +13,17 @@ export default function NovoSorteio() {
     while (numeros.size < 24) {
       numeros.add(Math.floor(Math.random() * 60) + 1);
     }
-    return Array.from(numeros).sort((a, b) => a - b);
+    return `{${Array.from(numeros).sort((a, b) => a - b).join(",")}}`;
   };
 
   const gerarCodigoSorteio = () => {
     const agora = new Date();
-    const dia = String(agora.getDate()).padStart(2, "0");
-    const mes = String(agora.getMonth() + 1).padStart(2, "0");
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
     const ano = agora.getFullYear();
-    const hora = String(agora.getHours()).padStart(2, "0");
-    const minuto = String(agora.getMinutes()).padStart(2, "0");
-    const segundo = String(agora.getSeconds()).padStart(2, "0");
+    const hora = String(agora.getHours()).padStart(2, '0');
+    const minuto = String(agora.getMinutes()).padStart(2, '0');
+    const segundo = String(agora.getSeconds()).padStart(2, '0');
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 

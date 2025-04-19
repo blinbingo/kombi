@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import PainelControle from "./PainelControle";
 import CartelasPremiadas from "./CartelasPremiadas";
 import RankingCartelas from "./RankingCartelas";
+import SimuladorBoard from "./SimuladorBoard";
 import { supabase } from "../utils/supabaseClient";
 
 export default function SimuladorBingo({
@@ -205,13 +206,12 @@ export default function SimuladorBingo({
 
   return (
     <div className="body" style={{ textAlign: "center" }}>
-      <div className="bingo-board">
-        {numeros.map((num) => (
-          <div key={num} className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}>
-            {num}
-          </div>
-        ))}
-      </div>
+      <SimuladorBoard
+        bolasSelecionadas={bolasSelecionadas}
+        numeros={numeros}
+        contador={contador}
+        sorteando={sorteando}
+      />
 
       <PainelControle
         sorteando={sorteando}
@@ -224,25 +224,6 @@ export default function SimuladorBingo({
         onConfirmarReinicio={reiniciarTudo}
         finalizarSorteio={finalizarSorteio}
       />
-
-      {sorteando && contador !== null && (
-        <p className="cronometro-digital">Próxima bola em: {contador}s</p>
-      )}
-
-      <h3>Histórico</h3>
-      <div style={{
-        display: "flex",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        gap: "6px",
-        marginTop: "10px"
-      }}>
-        {bolasSelecionadas.map((bola, i) => (
-          <div key={i} className="bola" style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}>
-            {bola}
-          </div>
-        ))}
-      </div>
 
       <CartelasPremiadas
         premios={premios}

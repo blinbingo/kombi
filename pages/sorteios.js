@@ -1,25 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SorteioCard from "../components/SorteioCard";
+import { supabase } from "../utils/supabaseClient";
 
 export default function Sorteios() {
-  // Mock temporário de sorteios agendados
-  const sorteios = [
-    {
-      horario: "15:50",
-      valorCartela: 5,
-      premios: { 25: 100, 50: 200, 75: 300, 100: 400 }
-    },
-    {
-      horario: "18:00",
-      valorCartela: 3,
-      premios: { 25: 75, 50: 150, 75: 225, 100: 300 }
-    },
-    {
-      horario: "20:30",
-      valorCartela: 10,
-      premios: { 25: 250, 50: 500, 75: 750, 100: 1000 }
+  const [sorteios, setSorteios] = useState([]);
+
+  useEffect(() => {
+    async function buscarSorteios() {
+      const { data, error } = await supabase
+        .from("bingo")
+        .select("*")
+        .order("data", { ascending: false });
+
+      if (error) {
+        console.error("Erro ao buscar sorteios:", error.message);
+      } else {
+        setSorteios(data);
+      }
     }
-  ];
+
+    buscarSorteios();
+  }, []);
 
   return (
     <div style={{
@@ -44,9 +45,14 @@ export default function Sorteios() {
         {sorteios.map((sorteio, index) => (
           <SorteioCard
             key={index}
-            horario={sorteio.horario}
+            horario={new Date(sorteio.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
             valorCartela={sorteio.valorCartela}
-            premios={sorteio.premios}
+            premios={{
+              25: sorteio.premio25,
+              50: sorteio.premio50,
+              75: sorteio.premio75,
+              100: sorteio.premio100
+            }}
           />
         ))}
       </div>

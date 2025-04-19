@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 export default function PainelSorteios() {
   const [sorteios, setSorteios] = useState([]);
   const [cartelaCounts, setCartelaCounts] = useState({});
+  const [confirmarExclusao, setConfirmarExclusao] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -12,8 +13,6 @@ export default function PainelSorteios() {
       const { data, error } = await supabase.from("bingo").select("*").order("data", { ascending: false });
       if (!error) {
         setSorteios(data);
-
-        // Buscar contagem de cartelas para cada sorteio
         const contagens = {};
         for (const s of data) {
           const { count } = await supabase
@@ -48,6 +47,7 @@ export default function PainelSorteios() {
     await supabase.from("cartelas").delete().eq("codigoSorteio", codigoSorteio);
     await supabase.from("bingo").delete().eq("codigoSorteio", codigoSorteio);
     setSorteios((prev) => prev.filter((s) => s.codigoSorteio !== codigoSorteio));
+    setConfirmarExclusao(null);
   };
 
   return (
@@ -119,30 +119,86 @@ export default function PainelSorteios() {
                 25%: R$ {s.premio25} | 50%: R$ {s.premio50}<br />
                 75%: R$ {s.premio75} | 100%: R$ {s.premio100}
               </p>
+
               <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", marginTop: "10px" }}>
-                <button style={{ flex: 1, padding: "8px", border: "2px solid #00ff00", backgroundColor: "transparent", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
+                <button style={{
+                  flex: 1,
+                  padding: "8px",
+                  border: "2px solid #00ff00",
+                  backgroundColor: "transparent",
+                  color: "#00ff00",
+                  fontWeight: "bold",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}>
                   INICIAR SORTEIO
                 </button>
-                <button style={{ flex: 1, padding: "8px", border: "2px solid #00ff00", backgroundColor: "transparent", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
+                <button style={{
+                  flex: 1,
+                  padding: "8px",
+                  border: "2px solid #00ff00",
+                  backgroundColor: "transparent",
+                  color: "#00ff00",
+                  fontWeight: "bold",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}>
                   INICIAR SIMULAÇÃO
                 </button>
               </div>
-              <button
-                onClick={() => excluirSorteio(s.codigoSorteio)}
-                style={{
-                  marginTop: "10px",
-                  width: "100%",
-                  border: "2px solid red",
-                  backgroundColor: "transparent",
-                  color: "red",
-                  borderRadius: "6px",
-                  padding: "6px 12px",
-                  fontWeight: "bold",
-                  cursor: "pointer"
-                }}
-              >
-                EXCLUIR SORTEIO
-              </button>
+
+              {confirmarExclusao === s.codigoSorteio ? (
+                <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+                  <button
+                    onClick={() => excluirSorteio(s.codigoSorteio)}
+                    style={{
+                      flex: 1,
+                      border: "2px solid red",
+                      backgroundColor: "transparent",
+                      color: "red",
+                      borderRadius: "6px",
+                      padding: "6px",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Confirmar Exclusão
+                  </button>
+                  <button
+                    onClick={() => setConfirmarExclusao(null)}
+                    style={{
+                      flex: 1,
+                      border: "2px solid gray",
+                      backgroundColor: "transparent",
+                      color: "gray",
+                      borderRadius: "6px",
+                      padding: "6px",
+                      fontWeight: "bold",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setConfirmarExclusao(s.codigoSorteio)}
+                  style={{
+                    marginTop: "10px",
+                    width: "100%",
+                    border: "2px solid red",
+                    backgroundColor: "transparent",
+                    color: "red",
+                    borderRadius: "6px",
+                    padding: "6px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    fontSize: "13px"
+                  }}
+                >
+                  EXCLUIR
+                </button>
+              )}
             </div>
           </div>
         ))}

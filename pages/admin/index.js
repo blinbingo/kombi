@@ -64,9 +64,31 @@ export default function PainelSorteios() {
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "20px" }}>
         {sorteios.map((s) => (
           <div key={s.codigoSorteio} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <p style={{ color: "#00ff00", fontSize: "14px", marginBottom: "6px" }}>
-              {s.codigoSorteio}
-            </p>
+            <div style={{
+              width: "100%",
+              maxWidth: "300px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "4px"
+            }}>
+              <p style={{ color: "#00ff00", fontSize: "14px" }}>{s.codigoSorteio}</p>
+              <button
+                onClick={() => exportarCSV(s.codigoSorteio)}
+                style={{
+                  fontSize: "11px",
+                  padding: "4px 8px",
+                  backgroundColor: "transparent",
+                  border: "1px solid #00ff00",
+                  color: "#00ff00",
+                  borderRadius: "4px",
+                  cursor: "pointer"
+                }}
+              >
+                Exportar Cartelas
+              </button>
+            </div>
+
             <div style={{
               border: "2px solid #00ff00",
               backgroundColor: "#111827",
@@ -90,21 +112,38 @@ export default function PainelSorteios() {
                 25%: R$ {s.premio25} | 50%: R$ {s.premio50}<br />
                 75%: R$ {s.premio75} | 100%: R$ {s.premio100}
               </p>
-              <button
-                onClick={() => exportarCSV(s.codigoSorteio)}
-                style={{
-                  marginTop: "10px",
-                  border: "2px solid #00ff00",
+
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "10px",
+                marginTop: "10px"
+              }}>
+                <button style={{
+                  flex: 1,
+                  padding: "8px",
                   backgroundColor: "transparent",
+                  border: "2px solid #00ff00",
                   color: "#00ff00",
-                  borderRadius: "6px",
-                  padding: "6px 12px",
                   fontWeight: "bold",
+                  borderRadius: "6px",
                   cursor: "pointer"
-                }}
-              >
-                Exportar Cartelas (.CSV)
-              </button>
+                }}>
+                  INICIAR SORTEIO
+                </button>
+                <button style={{
+                  flex: 1,
+                  padding: "8px",
+                  backgroundColor: "transparent",
+                  border: "2px solid #00ff00",
+                  color: "#00ff00",
+                  fontWeight: "bold",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}>
+                  INICIAR SIMULAÇÃO
+                </button>
+              </div>
             </div>
           </div>
         ))}

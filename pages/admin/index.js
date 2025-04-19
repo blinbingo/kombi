@@ -8,7 +8,10 @@ export default function PainelSorteios() {
 
   useEffect(() => {
     async function buscar() {
-      const { data, error } = await supabase.from("bingo").select("*").order("data", { ascending: false });
+      const { data, error } = await supabase
+        .from("bingo")
+        .select("*")
+        .order("data", { ascending: false });
       if (!error) setSorteios(data);
     }
     buscar();
@@ -58,41 +61,51 @@ export default function PainelSorteios() {
         </button>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "16px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "20px" }}>
         {sorteios.map((s) => (
-          <div key={s.codigoSorteio} style={{
-            border: "2px solid #00ff00",
-            backgroundColor: "#111827",
-            padding: "16px",
-            borderRadius: "10px",
-            minWidth: "260px",
-            boxShadow: "0 0 12px #00ff00"
-          }}>
-            <h3 style={{ color: "#00ff00", fontSize: "18px", marginBottom: "6px" }}>
+          <div key={s.codigoSorteio} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <p style={{ color: "#00ff00", fontSize: "14px", marginBottom: "6px" }}>
               {s.codigoSorteio}
-            </h3>
-            <p><strong>Horário:</strong> {new Date(s.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
-            <p><strong>Cartela:</strong> R$ {s.valorCartela}</p>
-            <p>
-              <strong>Premiação:</strong><br />
-              25%: R$ {s.premio25} | 50%: R$ {s.premio50}<br />
-              75%: R$ {s.premio75} | 100%: R$ {s.premio100}
             </p>
-            <button
-              onClick={() => exportarCSV(s.codigoSorteio)}
-              style={{
-                marginTop: "10px",
-                border: "2px solid #00ff00",
-                backgroundColor: "transparent",
-                color: "#00ff00",
-                borderRadius: "6px",
-                padding: "6px 12px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-            >
-              Exportar Cartelas (.CSV)
-            </button>
+            <div style={{
+              border: "2px solid #00ff00",
+              backgroundColor: "#111827",
+              padding: "16px",
+              borderRadius: "10px",
+              minWidth: "260px",
+              boxShadow: "0 0 12px #00ff00"
+            }}>
+              <p>
+                <strong>Data:</strong> {new Date(s.data).toLocaleDateString("pt-BR")}
+              </p>
+              <p>
+                <strong>Horário:</strong> {new Date(s.data).toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+              <p><strong>Cartela:</strong> R$ {s.valorCartela}</p>
+              <p>
+                <strong>Premiação:</strong><br />
+                25%: R$ {s.premio25} | 50%: R$ {s.premio50}<br />
+                75%: R$ {s.premio75} | 100%: R$ {s.premio100}
+              </p>
+              <button
+                onClick={() => exportarCSV(s.codigoSorteio)}
+                style={{
+                  marginTop: "10px",
+                  border: "2px solid #00ff00",
+                  backgroundColor: "transparent",
+                  color: "#00ff00",
+                  borderRadius: "6px",
+                  padding: "6px 12px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                Exportar Cartelas (.CSV)
+              </button>
+            </div>
           </div>
         ))}
       </div>

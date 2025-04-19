@@ -4,29 +4,35 @@ import { useRouter } from "next/router";
 
 export default function PainelSorteios() {
   const [sorteios, setSorteios] = useState([]);
+  const [cartelaCounts, setCartelaCounts] = useState({});
   const router = useRouter();
 
   useEffect(() => {
     async function buscar() {
-      const { data, error } = await supabase
-        .from("bingo")
-        .select("*")
-        .order("data", { ascending: false });
-      if (!error) setSorteios(data);
+      const { data, error } = await supabase.from("bingo").select("*").order("data", { ascending: false });
+      if (!error) {
+        setSorteios(data);
+
+        // Buscar contagem de cartelas para cada sorteio
+        const contagens = {};
+        for (const s of data) {
+          const { count } = await supabase
+            .from("cartelas")
+            .select("id", { count: "exact", head: true })
+            .eq("codigoSorteio", s.codigoSorteio);
+          contagens[s.codigoSorteio] = count || 0;
+        }
+        setCartelaCounts(contagens);
+      }
     }
     buscar();
   }, []);
 
   const exportarCSV = async (codigoSorteio) => {
-    const { data, error } = await supabase
-      .from("cartelas")
-      .select("*")
-      .eq("codigoSorteio", codigoSorteio);
-
+    const { data, error } = await supabase.from("cartelas").select("*").eq("codigoSorteio", codigoSorteio);
     if (error || !data) return;
-
     const linhas = data.map((c, i) =>
-      [`C${String(i + 1).padStart(4, "0")}`, ...(c.numeros || [])].join(",")
+      ["C" + String(i + 1).padStart(4, "0"), ...(c.numeros || [])].join(",")
     );
     const csv = "data:text/csv;charset=utf-8," + ["CÓDIGO,NUMEROS", ...linhas].join("\n");
     const encodedUri = encodeURI(csv);
@@ -36,6 +42,12 @@ export default function PainelSorteios() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const excluirSorteio = async (codigoSorteio) => {
+    await supabase.from("cartelas").delete().eq("codigoSorteio", codigoSorteio);
+    await supabase.from("bingo").delete().eq("codigoSorteio", codigoSorteio);
+    setSorteios((prev) => prev.filter((s) => s.codigoSorteio !== codigoSorteio));
   };
 
   return (
@@ -97,53 +109,40 @@ export default function PainelSorteios() {
               minWidth: "260px",
               boxShadow: "0 0 12px #00ff00"
             }}>
-              <p>
-                <strong>Data:</strong> {new Date(s.data).toLocaleDateString("pt-BR")}
-              </p>
-              <p>
-                <strong>Horário:</strong> {new Date(s.data).toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
+              <p><strong>Título:</strong> {s.titulo || "Sem título"}</p>
+              <p><strong>Data:</strong> {new Date(s.data).toLocaleDateString("pt-BR")}</p>
+              <p><strong>Horário:</strong> {new Date(s.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
               <p><strong>Cartela:</strong> R$ {s.valorCartela}</p>
+              <p><strong>Total de Cartelas:</strong> {cartelaCounts[s.codigoSorteio] || 0}</p>
               <p>
                 <strong>Premiação:</strong><br />
                 25%: R$ {s.premio25} | 50%: R$ {s.premio50}<br />
                 75%: R$ {s.premio75} | 100%: R$ {s.premio100}
               </p>
-
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "10px",
-                marginTop: "10px"
-              }}>
-                <button style={{
-                  flex: 1,
-                  padding: "8px",
-                  backgroundColor: "transparent",
-                  border: "2px solid #00ff00",
-                  color: "#00ff00",
-                  fontWeight: "bold",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", marginTop: "10px" }}>
+                <button style={{ flex: 1, padding: "8px", border: "2px solid #00ff00", backgroundColor: "transparent", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
                   INICIAR SORTEIO
                 </button>
-                <button style={{
-                  flex: 1,
-                  padding: "8px",
-                  backgroundColor: "transparent",
-                  border: "2px solid #00ff00",
-                  color: "#00ff00",
-                  fontWeight: "bold",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}>
+                <button style={{ flex: 1, padding: "8px", border: "2px solid #00ff00", backgroundColor: "transparent", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
                   INICIAR SIMULAÇÃO
                 </button>
               </div>
+              <button
+                onClick={() => excluirSorteio(s.codigoSorteio)}
+                style={{
+                  marginTop: "10px",
+                  width: "100%",
+                  border: "2px solid red",
+                  backgroundColor: "transparent",
+                  color: "red",
+                  borderRadius: "6px",
+                  padding: "6px 12px",
+                  fontWeight: "bold",
+                  cursor: "pointer"
+                }}
+              >
+                EXCLUIR SORTEIO
+              </button>
             </div>
           </div>
         ))}

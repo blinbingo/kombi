@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
 
 export default function NovoSorteio() {
+  const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [valorCartela, setValorCartela] = useState("");
@@ -18,27 +19,24 @@ export default function NovoSorteio() {
 
   const gerarCodigoSorteio = () => {
     const agora = new Date();
-    const dia = String(agora.getDate()).padStart(2, '0');
-    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const dia = String(agora.getDate()).padStart(2, "0");
+    const mes = String(agora.getMonth() + 1).padStart(2, "0");
     const ano = agora.getFullYear();
-    const hora = String(agora.getHours()).padStart(2, '0');
-    const minuto = String(agora.getMinutes()).padStart(2, '0');
-    const segundo = String(agora.getSeconds()).padStart(2, '0');
+    const hora = String(agora.getHours()).padStart(2, "0");
+    const minuto = String(agora.getMinutes()).padStart(2, "0");
+    const segundo = String(agora.getSeconds()).padStart(2, "0");
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 
   const criarSorteio = async () => {
-    if (!horario || !quantidade || !valorCartela || !premios[25] || !premios[50] || !premios[75] || !premios[100]) {
+    if (!data || !horario || !quantidade || !valorCartela || !premios[25] || !premios[50] || !premios[75] || !premios[100]) {
       setMensagem("Preencha todos os campos.");
       return;
     }
 
     setMensagem("Criando sorteio...");
     const codigo = gerarCodigoSorteio();
-    const dataSorteio = new Date();
-    const [h, m] = horario.split(":");
-    dataSorteio.setHours(Number(h));
-    dataSorteio.setMinutes(Number(m));
+    const dataSorteio = new Date(`${data}T${horario}`);
 
     const sorteio = {
       codigoSorteio: codigo,
@@ -80,6 +78,9 @@ export default function NovoSorteio() {
         Criar Novo Sorteio
       </h1>
       <div style={{ maxWidth: "480px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "10px" }}>
+        <label>Data do Sorteio:</label>
+        <input type="date" value={data} onChange={e => setData(e.target.value)} />
+
         <label>Horário do Sorteio (HH:MM):</label>
         <input type="time" value={horario} onChange={e => setHorario(e.target.value)} />
 
@@ -104,6 +105,15 @@ export default function NovoSorteio() {
         <button onClick={criarSorteio} style={{ marginTop: "12px" }}>
           Criar Sorteio
         </button>
+
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px", gap: "10px" }}>
+          <button style={{ flex: 1, padding: "10px", backgroundColor: "transparent", border: "2px solid #00ff00", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
+            INICIAR SORTEIO
+          </button>
+          <button style={{ flex: 1, padding: "10px", backgroundColor: "transparent", border: "2px solid #00ff00", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
+            INICIAR SIMULAÇÃO
+          </button>
+        </div>
 
         {mensagem && (
           <p style={{ marginTop: "20px", textAlign: "center", fontWeight: "bold" }}>

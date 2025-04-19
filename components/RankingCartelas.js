@@ -14,7 +14,10 @@ export default function RankingCartelas({ cartelas, bolasSelecionadas, etapasAlc
   const ranking = cartelas
     .map((cartela, index) => {
       const acertos = cartela.filter((n) => bolasSelecionadas.includes(n));
-      const faltam = cartela.filter((n) => !bolasSelecionadas.includes(n));
+     const faltam = cartela
+  .filter((num) => !bolasSelecionadas.includes(num))
+  .sort((a, b) => a - b);
+
       return {
         codigo: gerarCodigoCartela(index),
         faltamQtd: totalNecessario - acertos.length,

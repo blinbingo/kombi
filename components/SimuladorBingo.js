@@ -30,10 +30,62 @@ export default function SimuladorBingo({
     setPausado,
     jaParouNo100,
     numeros,
-    sortearBola,
     iniciarSorteio,
     reiniciarTudo
   } = useSorteio(tempoDelay);
+
+  const sortearBola = () => {
+    if (jaParouNo100.current) return;
+    const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
+    if (disponiveis.length === 0) return;
+    const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    const novas = [...bolasSelecionadas, nova];
+    setBolasSelecionadas(novas);
+    atualizarPremios(novas);
+  };
+
+  const atualizarPremios = (bolas) => {
+    const metas = [25, 50, 75, 100];
+    const novaBola = bolas[bolas.length - 1];
+    const novasEtapas = [...etapasAlcancadas];
+    const novosPremios = { ...premios };
+    const novosDesbloqueios = { ...bolasPremioDesbloqueadas };
+
+    metas.forEach((meta) => {
+      if (!novasEtapas.includes(meta)) {
+        const ganhadoras = [];
+        cartelas.forEach((cartela, index) => {
+          const acertos = cartela.filter((num) => bolas.includes(num));
+          const porcentagem = Math.floor((acertos.length / 24) * 100);
+          if (porcentagem >= meta && cartela.includes(novaBola)) {
+            ganhadoras.push("C" + String(index + 1).padStart(4, "0"));
+          }
+        });
+        if (ganhadoras.length > 0) {
+          novosPremios[meta] = ganhadoras;
+          novosDesbloqueios[meta] = novaBola;
+          novasEtapas.push(meta);
+        }
+      }
+    });
+
+    setPremios(novosPremios);
+    setBolasPremioDesbloqueadas(novosDesbloqueios);
+    setEtapasAlcancadas(novasEtapas);
+
+    if (novasEtapas.includes(100) && !jaParouNo100.current) {
+      const totalArrecadado = cartelas.length * valorCartela;
+      const totalPremiosPagos = [25, 50, 75, 100].reduce(
+        (acc, p) => acc + (novosPremios[p]?.length || 0) * valorPremios[p],
+        0
+      );
+      setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
+      jaParouNo100.current = true;
+      setSorteando(false);
+      setContador(null);
+      salvarSorteio(novosPremios);
+    }
+  };
 
   const salvarSorteio = async (premiadasReais) => {
     const totalPremiosPagos = [25, 50, 75, 100].reduce(
@@ -104,7 +156,7 @@ export default function SimuladorBingo({
     );
     setBolasSelecionadas(bolas);
     setPremios(premiadas);
-    setBolasPremioDesbloqueadas(desbloqueios);
+    setBolasPremioDesbloqueadas(dis...
     setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     jaParouNo100.current = true;
     setSorteando(false);

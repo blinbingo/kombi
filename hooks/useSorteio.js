@@ -38,6 +38,14 @@ export default function useSorteio(tempoDelay) {
     return () => clearTimeout(timer);
   }, [contador, sorteando, pausado]);
 
+  const reiniciarTudo = () => {
+    setBolasSelecionadas([]);
+    setContador(null);
+    setSorteando(false);
+    setPausado(false);
+    jaParouNo100.current = false;
+  };
+
   return {
     bolasSelecionadas,
     setBolasSelecionadas,
@@ -50,6 +58,7 @@ export default function useSorteio(tempoDelay) {
     jaParouNo100,
     numeros,
     sortearBola,
-    iniciarSorteio
+    iniciarSorteio,
+    reiniciarTudo
   };
 }

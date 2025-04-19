@@ -140,7 +140,13 @@ export default function SimuladorBingo({
       )}
 
       <h3>Histórico</h3>
-      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px", marginTop: "10px" }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        gap: "6px",
+        marginTop: "10px"
+      }}>
         {bolasSelecionadas.map((bola, i) => (
           <div key={i} className="bola" style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}>
             {bola}

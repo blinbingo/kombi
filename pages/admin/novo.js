@@ -3,10 +3,10 @@ import { supabase } from "../../utils/supabaseClient";
 
 export default function NovoSorteio() {
   const [horario, setHorario] = useState("");
+  const [quantidade, setQuantidade] = useState("");
   const [valorCartela, setValorCartela] = useState("");
   const [premios, setPremios] = useState({ 25: "", 50: "", 75: "", 100: "" });
   const [mensagem, setMensagem] = useState("");
-  const [cartelasGeradas, setCartelasGeradas] = useState([]);
 
   const gerarNumeros = () => {
     const numeros = new Set();
@@ -27,27 +27,19 @@ export default function NovoSorteio() {
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 
-  const exportarCSV = () => {
-    const linhas = cartelasGeradas.map((cartela, i) =>
-      [`C${String(i + 1).padStart(4, "0")}`, ...cartela].join(",")
-    );
-    const csvContent = "data:text/csv;charset=utf-8," + ["CÓDIGO,NUMEROS", ...linhas].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "cartelas.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const criarSorteio = async () => {
+    if (!horario || !quantidade || !valorCartela || !premios[25] || !premios[50] || !premios[75] || !premios[100]) {
+      setMensagem("Preencha todos os campos.");
+      return;
+    }
+
     setMensagem("Criando sorteio...");
     const codigo = gerarCodigoSorteio();
     const dataSorteio = new Date();
     const [h, m] = horario.split(":");
     dataSorteio.setHours(Number(h));
     dataSorteio.setMinutes(Number(m));
+
     const sorteio = {
       codigoSorteio: codigo,
       data: dataSorteio.toISOString(),
@@ -64,8 +56,9 @@ export default function NovoSorteio() {
       return;
     }
 
+    const total = parseInt(quantidade);
     const novasCartelas = [];
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < total; i++) {
       novasCartelas.push({ codigoSorteio: codigo, numeros: gerarNumeros() });
     }
 
@@ -75,8 +68,7 @@ export default function NovoSorteio() {
       return;
     }
 
-    setCartelasGeradas(novasCartelas.map(c => c.numeros));
-    setMensagem("✅ Sorteio e cartelas criadas com sucesso!");
+    setMensagem("✅ Sorteio criado com sucesso!");
   };
 
   return (
@@ -87,6 +79,9 @@ export default function NovoSorteio() {
       <div style={{ maxWidth: "400px", margin: "0 auto" }}>
         <label>Horário do Sorteio (HH:MM):</label>
         <input type="time" value={horario} onChange={e => setHorario(e.target.value)} />
+
+        <label>Quantidade de Cartelas:</label>
+        <input type="number" value={quantidade} onChange={e => setQuantidade(e.target.value)} />
 
         <label>Valor da Cartela:</label>
         <input type="number" value={valorCartela} onChange={e => setValorCartela(e.target.value)} />
@@ -106,12 +101,6 @@ export default function NovoSorteio() {
         <button onClick={criarSorteio} style={{ marginTop: "12px" }}>
           Criar Sorteio
         </button>
-
-        {cartelasGeradas.length > 0 && (
-          <button onClick={exportarCSV} style={{ marginTop: "10px", marginLeft: "10px" }}>
-            Exportar Cartelas (.CSV)
-          </button>
-        )}
 
         {mensagem && (
           <p style={{ marginTop: "20px", textAlign: "center", fontWeight: "bold" }}>{mensagem}</p>

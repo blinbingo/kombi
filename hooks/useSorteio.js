@@ -8,7 +8,6 @@ export default function useSorteio(tempoDelay) {
   const jaParouNo100 = useRef(false);
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
-  // funções vão entrar nos próximos blocos
   const sortearBola = () => {
     if (jaParouNo100.current) return;
     const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
@@ -24,7 +23,22 @@ export default function useSorteio(tempoDelay) {
     }
   };
 
-   return {
+  useEffect(() => {
+    let timer;
+    if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
+      if (contador > 0) {
+        timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
+      } else {
+        sortearBola();
+        if (!jaParouNo100.current) {
+          setContador(tempoDelay);
+        }
+      }
+    }
+    return () => clearTimeout(timer);
+  }, [contador, sorteando, pausado]);
+
+  return {
     bolasSelecionadas,
     setBolasSelecionadas,
     contador,

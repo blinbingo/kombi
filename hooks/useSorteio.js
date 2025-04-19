@@ -9,8 +9,22 @@ export default function useSorteio(tempoDelay) {
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
   // funções vão entrar nos próximos blocos
+  const sortearBola = () => {
+    if (jaParouNo100.current) return;
+    const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
+    if (disponiveis.length === 0) return;
+    const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    setBolasSelecionadas([...bolasSelecionadas, nova]);
+  };
 
-  return {
+  const iniciarSorteio = () => {
+    if (!sorteando) {
+      setSorteando(true);
+      setContador(tempoDelay);
+    }
+  };
+
+   return {
     bolasSelecionadas,
     setBolasSelecionadas,
     contador,
@@ -20,6 +34,8 @@ export default function useSorteio(tempoDelay) {
     pausado,
     setPausado,
     jaParouNo100,
-    numeros
+    numeros,
+    sortearBola,
+    iniciarSorteio
   };
 }

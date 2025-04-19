@@ -18,12 +18,12 @@ export default function NovoSorteio() {
 
   const gerarCodigoSorteio = () => {
     const agora = new Date();
-    const dia = String(agora.getDate()).padStart(2, '0');
-    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const dia = String(agora.getDate()).padStart(2, "0");
+    const mes = String(agora.getMonth() + 1).padStart(2, "0");
     const ano = agora.getFullYear();
-    const hora = String(agora.getHours()).padStart(2, '0');
-    const minuto = String(agora.getMinutes()).padStart(2, '0');
-    const segundo = String(agora.getSeconds()).padStart(2, '0');
+    const hora = String(agora.getHours()).padStart(2, "0");
+    const minuto = String(agora.getMinutes()).padStart(2, "0");
+    const segundo = String(agora.getSeconds()).padStart(2, "0");
     return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
   };
 
@@ -59,10 +59,9 @@ export default function NovoSorteio() {
     const total = parseInt(quantidade);
     const novasCartelas = [];
     for (let i = 0; i < total; i++) {
-      const numeros = gerarNumeros().join(",");
       novasCartelas.push({
         codigoSorteio: codigo,
-        numeros: `{${numeros}}`
+        numeros: gerarNumeros()
       });
     }
 

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PainelControle from "./PainelControle";
-import CartelasPremiadas from "./CartelasPremiadas";
-import RankingCartelas from "./RankingCartelas";
 import SimuladorBoard from "./SimuladorBoard";
+import SimuladorPainelInferior from "./SimuladorPainelInferior";
 import { supabase } from "../utils/supabaseClient";
 
 export default function SimuladorBingo({
@@ -225,26 +224,15 @@ export default function SimuladorBingo({
         finalizarSorteio={finalizarSorteio}
       />
 
-      <CartelasPremiadas
+      <SimuladorPainelInferior
         premios={premios}
         bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
         resumoFinanceiro={resumoFinanceiro}
-      />
-      <RankingCartelas
         cartelas={cartelas}
         bolasSelecionadas={bolasSelecionadas}
         etapasAlcancadas={etapasAlcancadas}
+        mensagem={mensagem}
       />
-
-      {mensagem && (
-        <div style={{
-          marginTop: "20px",
-          textAlign: "center",
-          color: mensagem.includes("✅") ? "limegreen" : "red"
-        }}>
-          <strong>{mensagem}</strong>
-        </div>
-      )}
     </div>
   );
 }

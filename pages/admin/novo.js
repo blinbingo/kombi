@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
 
 export default function NovoSorteio() {
+  const [titulo, setTitulo] = useState("");
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   const [quantidade, setQuantidade] = useState("");
@@ -29,7 +30,7 @@ export default function NovoSorteio() {
   };
 
   const criarSorteio = async () => {
-    if (!data || !horario || !quantidade || !valorCartela || !premios[25] || !premios[50] || !premios[75] || !premios[100]) {
+    if (!titulo || !data || !horario || !quantidade || !valorCartela || !premios[25] || !premios[50] || !premios[75] || !premios[100]) {
       setMensagem("Preencha todos os campos.");
       return;
     }
@@ -40,6 +41,7 @@ export default function NovoSorteio() {
 
     const sorteio = {
       codigoSorteio: codigo,
+      titulo: titulo,
       data: dataSorteio.toISOString(),
       valorCartela: parseFloat(valorCartela),
       premio25: parseFloat(premios[25]),
@@ -77,14 +79,23 @@ export default function NovoSorteio() {
       <h1 style={{ textAlign: "center", color: "#00ff00", fontSize: "26px", marginBottom: "20px" }}>
         Criar Novo Sorteio
       </h1>
-      <div style={{ maxWidth: "480px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "10px" }}>
-        <label>Data do Sorteio:</label>
+      <div style={{
+        maxWidth: "700px",
+        margin: "0 auto",
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "12px"
+      }}>
+        <label style={{ gridColumn: "1 / -1" }}>Título do Sorteio:</label>
+        <input type="text" value={titulo} onChange={e => setTitulo(e.target.value)} style={{ gridColumn: "1 / -1" }} />
+
+        <label>Data:</label>
         <input type="date" value={data} onChange={e => setData(e.target.value)} />
 
-        <label>Horário do Sorteio (HH:MM):</label>
+        <label>Horário:</label>
         <input type="time" value={horario} onChange={e => setHorario(e.target.value)} />
 
-        <label>Quantidade de Cartelas:</label>
+        <label>Quantidade:</label>
         <input type="number" value={quantidade} onChange={e => setQuantidade(e.target.value)} />
 
         <label>Valor da Cartela:</label>
@@ -101,22 +112,14 @@ export default function NovoSorteio() {
 
         <label>Prêmio 100%:</label>
         <input type="number" value={premios[100]} onChange={e => setPremios(p => ({ ...p, 100: e.target.value }))} />
+      </div>
 
-        <button onClick={criarSorteio} style={{ marginTop: "12px" }}>
+      <div style={{ maxWidth: "700px", margin: "30px auto 0", display: "flex", flexDirection: "column", gap: "10px" }}>
+        <button onClick={criarSorteio}>
           Criar Sorteio
         </button>
-
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px", gap: "10px" }}>
-          <button style={{ flex: 1, padding: "10px", backgroundColor: "transparent", border: "2px solid #00ff00", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
-            INICIAR SORTEIO
-          </button>
-          <button style={{ flex: 1, padding: "10px", backgroundColor: "transparent", border: "2px solid #00ff00", color: "#00ff00", fontWeight: "bold", borderRadius: "6px", cursor: "pointer" }}>
-            INICIAR SIMULAÇÃO
-          </button>
-        </div>
-
         {mensagem && (
-          <p style={{ marginTop: "20px", textAlign: "center", fontWeight: "bold" }}>
+          <p style={{ textAlign: "center", fontWeight: "bold" }}>
             {mensagem}
           </p>
         )}

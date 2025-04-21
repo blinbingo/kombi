@@ -10,7 +10,10 @@ export default function PainelSorteios() {
 
   useEffect(() => {
     async function buscar() {
-      const { data, error } = await supabase.from("bingo").select("*").order("data", { ascending: false });
+      const { data, error } = await supabase
+        .from("bingo")
+        .select("*")
+        .order("data", { ascending: false });
       if (!error) {
         setSorteios(data);
         const contagens = {};
@@ -26,14 +29,18 @@ export default function PainelSorteios() {
     }
     buscar();
   }, []);
-
   const exportarCSV = async (codigoSorteio) => {
-    const { data, error } = await supabase.from("cartelas").select("*").eq("codigoSorteio", codigoSorteio);
+    const { data, error } = await supabase
+      .from("cartelas")
+      .select("*")
+      .eq("codigoSorteio", codigoSorteio);
+
     if (error || !data) return;
+
     const linhas = data.map((c, i) =>
       ["C" + String(i + 1).padStart(4, "0"), ...(c.numeros || [])].join(",")
     );
-    const csv = "data:text/csv;charset=utf-8," + ["CÓDIGO,NUMEROS", ...linhas].join("\n");
+    const csv = "data:text/csv;charset=utf-8," + ["CÓDIGO,NUMEROS", ...linhas].join("\\n");
     const encodedUri = encodeURI(csv);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -49,7 +56,6 @@ export default function PainelSorteios() {
     setSorteios((prev) => prev.filter((s) => s.codigoSorteio !== codigoSorteio));
     setConfirmarExclusao(null);
   };
-
   return (
     <div style={{ backgroundColor: "#0f172a", minHeight: "100vh", padding: "20px", color: "white" }}>
       <h1 style={{ textAlign: "center", color: "#00ff00", fontSize: "26px", marginBottom: "20px" }}>
@@ -100,7 +106,6 @@ export default function PainelSorteios() {
                 Exportar Cartelas
               </button>
             </div>
-
             <div style={{
               border: "2px solid #00ff00",
               backgroundColor: "#111827",
@@ -121,16 +126,19 @@ export default function PainelSorteios() {
               </p>
 
               <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", marginTop: "10px" }}>
-                <button style={{
-                  flex: 1,
-                  padding: "8px",
-                  border: "2px solid #00ff00",
-                  backgroundColor: "transparent",
-                  color: "#00ff00",
-                  fontWeight: "bold",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}>
+                <button
+                  onClick={() => router.push("/admin/sorteio/" + s.codigoSorteio)}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    border: "2px solid #00ff00",
+                    backgroundColor: "transparent",
+                    color: "#00ff00",
+                    fontWeight: "bold",
+                    borderRadius: "6px",
+                    cursor: "pointer"
+                  }}
+                >
                   INICIAR SORTEIO
                 </button>
                 <button style={{

@@ -1,68 +1,72 @@
 
-import React, { useState } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import fs from "fs";
+import path from "path";
+import { useState, useRef, useEffect } from "react";
+import DocViewer from "../../components/DocViewer";
+import { docs } from "../../lib/docMap";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
-const DocViewer = ({ title, description, code }) => {
-  const [show, setShow] = useState(false);
+export async function getStaticProps() {
+  const allFolders = ["components", "pages", "styles", "utils"];
+  const filesOrganized = {};
+
+  for (const folder of allFolders) {
+    const dirPath = path.join(process.cwd(), folder);
+    if (!fs.existsSync(dirPath)) continue;
+
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    const files = entries.filter((entry) => entry.isFile()).map((entry) => entry.name).sort();
+
+    filesOrganized[folder] = files.map((file) => {
+      const filePath = path.join(dirPath, file);
+      const content = fs.readFileSync(filePath, "utf-8");
+
+      return {
+        caminho: folder + "/" + file,
+        code: content,
+        ...(docs[folder + "/" + file] || { titulo: file, descricao: "Sem descrição." })
+      };
+    });
+  }
+
+  const rootFiles = ["next.config.js", "package.json", "README.md"]
+    .filter((file) => fs.existsSync(path.join(process.cwd(), file)))
+    .map((file) => {
+      const content = fs.readFileSync(path.join(process.cwd(), file), "utf-8");
+      return {
+        caminho: file,
+        code: content,
+        ...(docs[file] || { titulo: file, descricao: "Sem descrição." })
+      };
+    });
+
+  filesOrganized["raiz"] = rootFiles;
+
+  return { props: { arquivos: filesOrganized } };
+}
+
+export default function Docs({ arquivos }) {
+  const [filtro, setFiltro] = useState("");
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    console.log("Arquivos carregados:", arquivos);
+  }, [arquivos]);
+
+  if (!arquivos || Object.keys(arquivos).length === 0) {
+    return (
+      <div style={{ padding: "2rem", background: "#0f172a", color: "#fff" }}>
+        <h1>⚠️ Nenhum conteúdo encontrado.</h1>
+        <p>Verifique se o arquivo <code>docMap.js</code> está correto e se há arquivos no projeto.</p>
+      </div>
+    );
+  }
 
   return (
-    <div style={{
-      marginBottom: "1.5rem",
-      padding: "1rem",
-      borderRadius: "12px",
-      background: "#1e293b",
-      border: "1px solid #00ff88"
-    }}>
-      <h2
-        style={{ color: "#00ff88", cursor: "pointer", margin: 0 }}
-        onClick={() => setShow(true)}
-      >
-        {title}
-      </h2>
-      <p style={{ color: "#ffffff", marginTop: "0.5rem" }}>{description}</p>
-
-      {show && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0,0,0,0.8)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1000,
-        }}>
-          <div style={{
-            background: "#0f172a",
-            padding: "1rem",
-            borderRadius: "12px",
-            maxHeight: "90vh",
-            maxWidth: "90vw",
-            overflowY: "auto",
-            border: "1px solid #00ff88"
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h3 style={{ color: "#00ff88" }}>{title}</h3>
-              <button onClick={() => setShow(false)} style={{
-                background: "#00ff88",
-                color: "#000",
-                border: "none",
-                borderRadius: "4px",
-                padding: "0.3rem 0.8rem",
-                cursor: "pointer"
-              }}>Fechar</button>
-            </div>
-            <SyntaxHighlighter language="javascript" style={vscDarkPlus} customStyle={{ fontSize: "0.75rem" }}>
-              {code}
-            </SyntaxHighlighter>
-          </div>
-        </div>
-      )}
+    <div style={{ padding: "2rem", background: "#0f172a", color: "#fff" }}>
+      <h1 style={{ color: "#00ff88" }}>📘 Documentação Técnica</h1>
+      <p>Arquivos carregados: {Object.keys(arquivos).length}</p>
     </div>
   );
-};
-
-export default DocViewer;
+}

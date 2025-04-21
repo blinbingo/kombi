@@ -63,36 +63,45 @@ export default function Docs({ arquivosPorPasta }) {
 
   const exportarPDF = () => {
     const pdf = new jsPDF("p", "mm", "a4");
-    const margin = 10;
-    let y = margin;
+    const margin = 15;
+    const maxWidth = 180;
 
     const addText = (text, size = 12, bold = false) => {
+      const lines = pdf.splitTextToSize(text, maxWidth);
       pdf.setFontSize(size);
       pdf.setFont("helvetica", bold ? "bold" : "normal");
-      const lines = pdf.splitTextToSize(text, 180);
-      if (y + lines.length * 6 > 280) {
-        pdf.addPage();
-        y = margin;
-      }
-      pdf.text(lines, margin, y);
-      y += lines.length * 6;
+      pdf.text(lines, margin, pdf.autoTable.previous ? pdf.autoTable.previous.finalY + 10 : margin);
     };
 
-    Object.entries(arquivosPorPasta).sort().forEach(([pasta, arquivos]) => {
-      addText(`📁 ${pasta}`, 14, true);
-      y += 4;
+    Object.entries(arquivosPorPasta).sort().forEach(([pasta, arquivos], index) => {
+      arquivos.forEach((arq, i) => {
+        if (index !== 0 || i !== 0) pdf.addPage();
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`Arquivo: ${arq.caminho}`, margin, 20);
 
-      aplicaFiltro(arquivos).forEach((arq) => {
-        addText(`📄 ${arq.titulo}`, 12, true);
-        addText(arq.descricao, 10, false);
-        y += 2;
-        addText("Código-fonte:", 10, true);
-        addText(arq.code, 8, false);
-        y += 6;
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        const descLines = pdf.splitTextToSize(arq.descricao, maxWidth);
+        pdf.text("Descrição:", margin, 30);
+        pdf.text(descLines, margin, 36);
+
+        pdf.text("Código-fonte:", margin, 48);
+        const codeLines = pdf.splitTextToSize(arq.code, maxWidth);
+        let y = 54;
+        codeLines.forEach((line) => {
+          if (y > 280) {
+            pdf.addPage();
+            y = 20;
+          }
+          pdf.setFont("courier", "normal");
+          pdf.text(line, margin, y);
+          y += 5;
+        });
       });
     });
 
-    pdf.save("documentacao-completa.pdf");
+    pdf.save("documentacao-formatada.pdf");
   };
 
   return (

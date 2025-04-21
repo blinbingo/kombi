@@ -47,10 +47,13 @@ export async function getStaticProps() {
 export default function Docs({ arquivos }) {
   const [filtro, setFiltro] = useState("");
 
-  const filtrarArquivos = (lista) =>
-    lista.filter(({ titulo, descricao, code }) =>
-      (titulo + descricao + code).toLowerCase().includes(filtro.toLowerCase())
+  const aplicaFiltro = (lista) => {
+    if (!filtro) return lista;
+    const termo = filtro.toLowerCase();
+    return lista.filter(({ titulo, descricao, code }) =>
+      (titulo + descricao + code).toLowerCase().includes(termo)
     );
+  };
 
   return (
     <div style={{ background: "#0f172a", color: "#ffffff", minHeight: "100vh", padding: "2rem" }}>
@@ -95,7 +98,7 @@ export default function Docs({ arquivos }) {
       {Object.entries(arquivos).sort().map(([pasta, lista]) => (
         <div key={pasta}>
           <h2 style={{ marginTop: "3rem", color: "#00ff88" }}>{pasta.toUpperCase()}</h2>
-          {filtrarArquivos(lista).map((arq, index) => (
+          {aplicaFiltro(lista).map((arq, index) => (
             <div id={arq.caminho.replace(/[./]/g, "-")} key={index}>
               <DocViewer title={arq.titulo} description={arq.descricao} code={arq.code} />
             </div>

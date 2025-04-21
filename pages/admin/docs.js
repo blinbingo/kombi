@@ -1,7 +1,7 @@
 
 import fs from "fs";
 import path from "path";
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import DocViewer from "../../components/DocViewer";
 import { docs } from "../../lib/docMap";
 import jsPDF from "jspdf";
@@ -22,10 +22,12 @@ export async function getStaticProps() {
       } else if (validExtensions.includes(path.extname(entry.name))) {
         const content = fs.readFileSync(filePath, "utf-8");
         const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, "/");
+
         results.push({
           caminho: relativePath,
-          code: content,
-          ...(docs[relativePath] || { titulo: path.basename(relativePath), descricao: "Sem descrição." })
+          titulo: path.basename(relativePath),
+          descricao: docs[relativePath]?.descricao || "Sem descrição.",
+          code: content
         });
       }
     });
@@ -62,6 +64,8 @@ export default function Docs({ arquivos }) {
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
     pdf.save("documentacao-bingo.pdf");
   };
+
+  const arquivosFiltrados = aplicaFiltro(arquivos);
 
   return (
     <div style={{ background: "#0f172a", color: "#ffffff", minHeight: "100vh", padding: "2rem" }}>
@@ -100,7 +104,7 @@ export default function Docs({ arquivos }) {
 
       <div id="documentacao-pdf">
         <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-          {aplicaFiltro(arquivos).map((arq, index) => (
+          {arquivosFiltrados.map((arq, index) => (
             <li key={index} style={{ marginBottom: "2rem" }}>
               <DocViewer title={arq.titulo} description={arq.descricao} code={arq.code} />
             </li>

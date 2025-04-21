@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
-import DocViewer from "@/components/DocViewer";
-import { docs } from "@/lib/docMap";
+import DocViewer from "../../components/DocViewer";
+import { docs } from "../../lib/docMap";
+
 
 export async function getStaticProps() {
   const baseDir = path.join(process.cwd(), "components");

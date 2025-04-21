@@ -16,6 +16,7 @@ export default function SorteioManual() {
   const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
+  const [encerrado, setEncerrado] = useState(false);
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
   useEffect(() => {
@@ -34,9 +35,8 @@ export default function SorteioManual() {
       carregarCartelas();
     }
   }, [codigo]);
-
   const sortearBola = (num) => {
-    if (bolasSelecionadas.includes(num)) return;
+    if (bolasSelecionadas.includes(num) || encerrado) return;
     const novas = [...bolasSelecionadas, num];
     setBolasSelecionadas(novas);
     atualizarPremios(novas);
@@ -70,10 +70,44 @@ export default function SorteioManual() {
     setPremios(novosPremios);
     setBolasPremioDesbloqueadas(novosDesbloqueios);
     setEtapasAlcancadas(novasEtapas);
+
+    if (novasEtapas.includes(100)) {
+      const totalArrecadado = cartelas.length * 10;
+      const totalPremiosPagos =
+        (novosPremios[25]?.length || 0) * 10 +
+        (novosPremios[50]?.length || 0) * 20 +
+        (novosPremios[75]?.length || 0) * 200 +
+        (novosPremios[100]?.length || 0) * 500;
+      setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
+    }
   };
 
+  const reiniciarTudo = () => {
+    setBolasSelecionadas([]);
+    setPremios({ 25: [], 50: [], 75: [], 100: [] });
+    setEtapasAlcancadas([]);
+    setBolasPremioDesbloqueadas({});
+    setResumoFinanceiro(null);
+    setEncerrado(false);
+  };
   return (
     <div className="body" style={{ textAlign: "center" }}>
+      <button
+        onClick={() => router.push("/admin")}
+        style={{
+          marginBottom: "20px",
+          border: "2px solid #00ff00",
+          color: "#00ff00",
+          backgroundColor: "transparent",
+          padding: "8px 16px",
+          borderRadius: "6px",
+          cursor: "pointer",
+          fontWeight: "bold"
+        }}
+      >
+        ← Voltar
+      </button>
+
       <div className="bingo-board">
         {numeros.map((num) => (
           <div
@@ -95,27 +129,66 @@ export default function SorteioManual() {
         setPausado={() => {}}
         confirmarReinicio={false}
         setConfirmarReinicio={() => {}}
-        onConfirmarReinicio={() => {
-          setBolasSelecionadas([]);
-          setPremios({ 25: [], 50: [], 75: [], 100: [] });
-          setEtapasAlcancadas([]);
-          setBolasPremioDesbloqueadas({});
-          setResumoFinanceiro(null);
-        }}
+        onConfirmarReinicio={reiniciarTudo}
         finalizarSorteio={() => {}}
       />
 
-      <HistoricoBolas bolas={bolasSelecionadas} />
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        gap: "6px",
+        margin: "20px auto"
+      }}>
+        {bolasSelecionadas.map((bola, i) => (
+          <div
+            key={i}
+            className="bola"
+            style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}
+          >
+            {bola}
+          </div>
+        ))}
+      </div>
       <CartelasPremiadas
         premios={premios}
         bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
         resumoFinanceiro={resumoFinanceiro}
       />
+
       <RankingCartelas
         cartelas={cartelas}
         bolasSelecionadas={bolasSelecionadas}
         etapasAlcancadas={etapasAlcancadas}
       />
+
+      {etapasAlcancadas.includes(100) && !encerrado && (
+        <button
+          onClick={async () => {
+            const dados = {
+              codigoSorteio: codigo,
+              bolas: bolasSelecionadas,
+              premiados: premios,
+              resumo: resumoFinanceiro,
+              encerradoEm: new Date().toISOString()
+            };
+            await supabase.from("resultados").insert([dados]);
+            setEncerrado(true);
+          }}
+          style={{
+            marginTop: "30px",
+            border: "2px solid #00ff00",
+            backgroundColor: "transparent",
+            color: "#00ff00",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
+          ENCERRAR SORTEIO
+        </button>
+      )}
     </div>
   );
 }

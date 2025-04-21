@@ -4,7 +4,6 @@ import path from "path";
 import { useState } from "react";
 import DocViewer from "../../components/DocViewer";
 import { docs } from "../../lib/docMap";
-import jsPDF from "jspdf";
 
 export async function getStaticProps() {
   const projectRoot = process.cwd();
@@ -61,82 +60,36 @@ export default function Docs({ arquivosPorPasta }) {
     );
   };
 
-  const exportarPDF = () => {
-    const pdf = new jsPDF("p", "mm", "a4");
-    const margin = 15;
-    const maxWidth = 180;
+  const baixarPDF = () => {
+    window.open("/KOMBI_Exportado_EstiloDark.pdf", "_blank");
+  };
 
-    const addText = (text, size = 12, bold = false) => {
-      const lines = pdf.splitTextToSize(text, maxWidth);
-      pdf.setFontSize(size);
-      pdf.setFont("helvetica", bold ? "bold" : "normal");
-      pdf.text(lines, margin, pdf.autoTable.previous ? pdf.autoTable.previous.finalY + 10 : margin);
-    };
-
-    Object.entries(arquivosPorPasta).sort().forEach(([pasta, arquivos], index) => {
-      arquivos.forEach((arq, i) => {
-        if (index !== 0 || i !== 0) pdf.addPage();
-        pdf.setFontSize(16);
-        pdf.setFont("helvetica", "bold");
-        pdf.text(`Arquivo: ${arq.caminho}`, margin, 20);
-
-        pdf.setFontSize(11);
-        pdf.setFont("helvetica", "normal");
-        const descLines = pdf.splitTextToSize(arq.descricao, maxWidth);
-        pdf.text("Descrição:", margin, 30);
-        pdf.text(descLines, margin, 36);
-
-        pdf.text("Código-fonte:", margin, 48);
-        const codeLines = pdf.splitTextToSize(arq.code, maxWidth);
-        let y = 54;
-        codeLines.forEach((line) => {
-          if (y > 280) {
-            pdf.addPage();
-            y = 20;
-          }
-          pdf.setFont("courier", "normal");
-          pdf.text(line, margin, y);
-          y += 5;
-        });
-      });
-    });
-
-    pdf.save("documentacao-formatada.pdf");
+  const baixarDOCX = () => {
+    window.open("/KOMBI_Exportado_Painel.docx", "_blank");
   };
 
   return (
     <div style={{ background: "#0f172a", color: "#ffffff", minHeight: "100vh", padding: "2rem" }}>
       <h1 style={{ fontSize: "2rem", color: "#00ff88", marginBottom: "1rem" }}>📘 Documentação Técnica</h1>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
         <input
           type="text"
           placeholder="Buscar por palavra-chave..."
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
           style={{
+            flex: 1,
             padding: "0.5rem 1rem",
             borderRadius: "8px",
             border: "1px solid #00ff88",
             background: "#0f172a",
             color: "#fff",
-            width: "75%",
+            minWidth: "250px"
           }}
         />
-        <button
-          onClick={exportarPDF}
-          style={{
-            padding: "0.5rem 1rem",
-            marginLeft: "1rem",
-            borderRadius: "8px",
-            background: "#00ff88",
-            border: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Exportar PDF
-        </button>
+        <button onClick={baixarPDF} style={btnStyle}>Exportar PDF</button>
+        <button onClick={baixarDOCX} style={btnStyle}>Exportar DOCX</button>
       </div>
 
       <div>
@@ -158,3 +111,12 @@ export default function Docs({ arquivosPorPasta }) {
     </div>
   );
 }
+
+const btnStyle = {
+  padding: "0.5rem 1rem",
+  borderRadius: "8px",
+  background: "#00ff88",
+  border: "none",
+  fontWeight: "bold",
+  cursor: "pointer"
+};

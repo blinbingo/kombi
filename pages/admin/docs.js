@@ -5,7 +5,6 @@ import { useState } from "react";
 import DocViewer from "../../components/DocViewer";
 import { docs } from "../../lib/docMap";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 export async function getStaticProps() {
   const projectRoot = process.cwd();
@@ -62,18 +61,38 @@ export default function Docs({ arquivosPorPasta }) {
     );
   };
 
-  const exportarPDF = async () => {
-    const container = document.getElementById("documentacao-pdf");
-    if (!container) return alert("Não foi possível exportar.");
-
-    const canvas = await html2canvas(container, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
+  const exportarPDF = () => {
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("documentacao-painel.pdf");
+    const margin = 10;
+    let y = margin;
+
+    const addText = (text, size = 12, bold = false) => {
+      pdf.setFontSize(size);
+      pdf.setFont("helvetica", bold ? "bold" : "normal");
+      const lines = pdf.splitTextToSize(text, 180);
+      if (y + lines.length * 6 > 280) {
+        pdf.addPage();
+        y = margin;
+      }
+      pdf.text(lines, margin, y);
+      y += lines.length * 6;
+    };
+
+    Object.entries(arquivosPorPasta).sort().forEach(([pasta, arquivos]) => {
+      addText(`📁 ${pasta}`, 14, true);
+      y += 4;
+
+      aplicaFiltro(arquivos).forEach((arq) => {
+        addText(`📄 ${arq.titulo}`, 12, true);
+        addText(arq.descricao, 10, false);
+        y += 2;
+        addText("Código-fonte:", 10, true);
+        addText(arq.code, 8, false);
+        y += 6;
+      });
+    });
+
+    pdf.save("documentacao-completa.pdf");
   };
 
   return (
@@ -111,7 +130,7 @@ export default function Docs({ arquivosPorPasta }) {
         </button>
       </div>
 
-      <div id="documentacao-pdf">
+      <div>
         {Object.entries(arquivosPorPasta).sort().map(([pasta, arquivos]) => (
           <div key={pasta}>
             <h2 style={{ color: "#38f2a5", borderBottom: "1px solid #38f2a5", paddingBottom: "0.25rem", marginTop: "2rem" }}>

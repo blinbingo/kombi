@@ -16,6 +16,7 @@ export default function SorteioManual() {
   const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
+  const [mensagem, setMensagem] = useState("");
   const [encerrado, setEncerrado] = useState(false);
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
@@ -69,15 +70,16 @@ export default function SorteioManual() {
 
     setPremios(novosPremios);
     setBolasPremioDesbloqueadas(novosDesbloqueios);
-    setEtapasAlcancadas(novasEtapas);
+    setEtapasAlcancancadas(novasEtapas);
 
     if (novasEtapas.includes(100)) {
-      const totalArrecadado = cartelas.length * 10;
+      const totalArrecadado = cartelas.length * 10; // ajuste conforme valorCartela real
       const totalPremiosPagos =
         (novosPremios[25]?.length || 0) * 10 +
         (novosPremios[50]?.length || 0) * 20 +
         (novosPremios[75]?.length || 0) * 200 +
         (novosPremios[100]?.length || 0) * 500;
+
       setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     }
   };
@@ -85,10 +87,11 @@ export default function SorteioManual() {
   const reiniciarTudo = () => {
     setBolasSelecionadas([]);
     setPremios({ 25: [], 50: [], 75: [], 100: [] });
-    setEtapasAlcancadas([]);
+    setEtapasAlcancancadas([]);
     setBolasPremioDesbloqueadas({});
     setResumoFinanceiro(null);
     setEncerrado(false);
+    setMensagem("");
   };
   return (
     <div className="body" style={{ textAlign: "center" }}>
@@ -172,8 +175,13 @@ export default function SorteioManual() {
               resumo: resumoFinanceiro,
               encerradoEm: new Date().toISOString()
             };
-            await supabase.from("resultados").insert([dados]);
-            setEncerrado(true);
+            const { error } = await supabase.from("resultados").insert([dados]);
+            if (error) {
+              setMensagem("❌ Erro ao encerrar sorteio!");
+            } else {
+              setMensagem("✅ Sorteio encerrado e salvo com sucesso!");
+              setEncerrado(true);
+            }
           }}
           style={{
             marginTop: "30px",
@@ -188,6 +196,12 @@ export default function SorteioManual() {
         >
           ENCERRAR SORTEIO
         </button>
+      )}
+
+      {mensagem && (
+        <p style={{ marginTop: "20px", fontWeight: "bold", color: mensagem.includes("✅") ? "#00ff00" : "red" }}>
+          {mensagem}
+        </p>
       )}
     </div>
   );

@@ -28,6 +28,7 @@ export async function getStaticProps() {
       } else if (validExtensions.includes(path.extname(entry.name))) {
         const content = fs.readFileSync(filePath, "utf-8");
         results.push({
+          pasta: path.dirname(relPath),
           caminho: relPath,
           titulo: path.basename(relPath),
           descricao: docs[relPath]?.descricao || "Sem descrição.",
@@ -39,12 +40,18 @@ export async function getStaticProps() {
     return results;
   };
 
-  const arquivos = getAllFiles(projectRoot);
+  const arquivosBrutos = getAllFiles(projectRoot);
 
-  return { props: { arquivos } };
+  const agrupados = arquivosBrutos.reduce((acc, arquivo) => {
+    if (!acc[arquivo.pasta]) acc[arquivo.pasta] = [];
+    acc[arquivo.pasta].push(arquivo);
+    return acc;
+  }, {});
+
+  return { props: { arquivosPorPasta: agrupados } };
 }
 
-export default function Docs({ arquivos }) {
+export default function Docs({ arquivosPorPasta }) {
   const [filtro, setFiltro] = useState("");
 
   const aplicaFiltro = (lista) => {
@@ -66,10 +73,8 @@ export default function Docs({ arquivos }) {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("documentacao-bingo.pdf");
+    pdf.save("documentacao-painel.pdf");
   };
-
-  const arquivosFiltrados = aplicaFiltro(arquivos);
 
   return (
     <div style={{ background: "#0f172a", color: "#ffffff", minHeight: "100vh", padding: "2rem" }}>
@@ -107,13 +112,20 @@ export default function Docs({ arquivos }) {
       </div>
 
       <div id="documentacao-pdf">
-        <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-          {arquivosFiltrados.map((arq, index) => (
-            <li key={index} style={{ marginBottom: "2rem" }}>
-              <DocViewer title={arq.titulo} description={arq.descricao} code={arq.code} />
-            </li>
-          ))}
-        </ul>
+        {Object.entries(arquivosPorPasta).sort().map(([pasta, arquivos]) => (
+          <div key={pasta}>
+            <h2 style={{ color: "#38f2a5", borderBottom: "1px solid #38f2a5", paddingBottom: "0.25rem", marginTop: "2rem" }}>
+              📁 {pasta}
+            </h2>
+            <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+              {aplicaFiltro(arquivos).map((arq, index) => (
+                <li key={index} style={{ marginBottom: "2rem" }}>
+                  <DocViewer title={arq.titulo} description={arq.descricao} code={arq.code} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );

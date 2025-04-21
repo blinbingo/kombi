@@ -1,7 +1,7 @@
 
 import fs from "fs";
 import path from "path";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import DocViewer from "../../components/DocViewer";
 import { docs } from "../../lib/docMap";
 import jsPDF from "jspdf";
@@ -10,6 +10,7 @@ import html2canvas from "html2canvas";
 export async function getStaticProps() {
   const projectRoot = process.cwd();
   const validExtensions = [".js", ".jsx", ".ts", ".tsx", ".json", ".md", ".css"];
+  const ignoreFolders = [".next", "node_modules", ".git", ".vercel", ".turbo", "public", "out"];
 
   const getAllFiles = (dirPath) => {
     let results = [];
@@ -17,16 +18,19 @@ export async function getStaticProps() {
 
     list.forEach((entry) => {
       const filePath = path.join(dirPath, entry.name);
+      const relPath = path.relative(projectRoot, filePath).replace(/\\/g, "/");
+
       if (entry.isDirectory()) {
-        results = results.concat(getAllFiles(filePath));
+        const shouldIgnore = ignoreFolders.some(folder => relPath.startsWith(folder));
+        if (!shouldIgnore) {
+          results = results.concat(getAllFiles(filePath));
+        }
       } else if (validExtensions.includes(path.extname(entry.name))) {
         const content = fs.readFileSync(filePath, "utf-8");
-        const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, "/");
-
         results.push({
-          caminho: relativePath,
-          titulo: path.basename(relativePath),
-          descricao: docs[relativePath]?.descricao || "Sem descrição.",
+          caminho: relPath,
+          titulo: path.basename(relPath),
+          descricao: docs[relPath]?.descricao || "Sem descrição.",
           code: content
         });
       }

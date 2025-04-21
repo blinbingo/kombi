@@ -13,7 +13,9 @@ export async function getStaticProps() {
     const dirPath = path.join(process.cwd(), folder);
     if (!fs.existsSync(dirPath)) continue;
 
-    const files = fs.readdirSync(dirPath).sort();
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    const files = entries.filter((entry) => entry.isFile()).map((entry) => entry.name).sort();
+
     filesOrganized[folder] = files.map((file) => {
       const filePath = path.join(dirPath, file);
       const content = fs.readFileSync(filePath, "utf-8");

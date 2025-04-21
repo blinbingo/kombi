@@ -10,6 +10,7 @@ export async function getStaticProps() {
   const projectRoot = process.cwd();
   const validExtensions = [".js", ".jsx", ".ts", ".tsx", ".json", ".md", ".css"];
   const ignoreFolders = [".next", "node_modules", ".git", ".vercel", ".turbo", "public", "out"];
+  const ignoreFiles = ["package-lock.json", "vercel.json"];
 
   const getAllFiles = (dirPath) => {
     let results = [];
@@ -24,7 +25,10 @@ export async function getStaticProps() {
         if (!shouldIgnore) {
           results = results.concat(getAllFiles(filePath));
         }
-      } else if (validExtensions.includes(path.extname(entry.name))) {
+      } else if (
+        validExtensions.includes(path.extname(entry.name)) &&
+        !ignoreFiles.includes(entry.name)
+      ) {
         const content = fs.readFileSync(filePath, "utf-8");
         results.push({
           pasta: path.dirname(relPath),
@@ -63,33 +67,34 @@ export default function Docs({ arquivosPorPasta }) {
 
   const exportarPDF = () => {
     const pdf = new jsPDF("p", "mm", "a4");
-    const margin = 10;
-    let y = margin;
+    const margin = 15;
+    const maxWidth = 180;
 
-    const addText = (text, size = 12, bold = false) => {
-      pdf.setFontSize(size);
-      pdf.setFont("helvetica", bold ? "bold" : "normal");
-      const lines = pdf.splitTextToSize(text, 180);
-      if (y + lines.length * 6 > 280) {
-        pdf.addPage();
-        y = margin;
-      }
-      pdf.text(lines, margin, y);
-      y += lines.length * 6;
-    };
+    Object.entries(arquivosPorPasta).sort().forEach(([pasta, arquivos], index) => {
+      aplicaFiltro(arquivos).forEach((arq, i) => {
+        if (index !== 0 || i !== 0) pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`Arquivo: ${arq.caminho}`, margin, 20);
 
-    Object.entries(arquivosPorPasta).sort().forEach(([pasta, arquivos]) => {
-      arquivos.forEach((arq, i) => {
-        pdf.addPage();
-        y = margin;
-        addText(`Arquivo: ${arq.caminho}`, 14, true);
-        y += 4;
-        addText("Descrição:", 10, true);
-        addText(arq.descricao, 10, false);
-        y += 2;
-        addText("Código-fonte:", 10, true);
-        addText(arq.code, 8, false);
-        y += 6;
+        pdf.setFontSize(11);
+        pdf.setFont("helvetica", "normal");
+        const descLines = pdf.splitTextToSize(arq.descricao, maxWidth);
+        pdf.text("Descrição:", margin, 30);
+        pdf.text(descLines, margin, 36);
+
+        pdf.text("Código-fonte:", margin, 48);
+        const codeLines = pdf.splitTextToSize(arq.code, maxWidth);
+        let y = 54;
+        codeLines.forEach((line) => {
+          if (y > 280) {
+            pdf.addPage();
+            y = 20;
+          }
+          pdf.setFont("courier", "normal");
+          pdf.text(line, margin, y);
+          y += 5;
+        });
       });
     });
 

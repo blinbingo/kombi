@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
@@ -27,7 +28,6 @@ export default function SorteioManual() {
           .from("cartelas")
           .select("numeros")
           .eq("codigoSorteio", codigo);
-
         if (!error && data) {
           const lista = data.map((item) => item.numeros);
           setCartelas(lista);
@@ -36,6 +36,7 @@ export default function SorteioManual() {
       carregarCartelas();
     }
   }, [codigo]);
+
   const sortearBola = (num) => {
     if (bolasSelecionadas.includes(num) || encerrado) return;
     const novas = [...bolasSelecionadas, num];
@@ -73,13 +74,12 @@ export default function SorteioManual() {
     setEtapasAlcancadas(novasEtapas);
 
     if (novasEtapas.includes(100)) {
-      const totalArrecadado = cartelas.length * 10; // Ajustável
+      const totalArrecadado = cartelas.length * 10;
       const totalPremiosPagos =
         (novosPremios[25]?.length || 0) * 10 +
         (novosPremios[50]?.length || 0) * 20 +
         (novosPremios[75]?.length || 0) * 200 +
         (novosPremios[100]?.length || 0) * 500;
-
       setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     }
   };
@@ -93,6 +93,7 @@ export default function SorteioManual() {
     setEncerrado(false);
     setMensagem("");
   };
+
   return (
     <div className="body" style={{ textAlign: "center" }}>
       <button
@@ -153,56 +154,6 @@ export default function SorteioManual() {
           </div>
         ))}
       </div>
-      <CartelasPremiadas
-        premios={premios}
-        bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
-        resumoFinanceiro={resumoFinanceiro}
-      />
-
-      <RankingCartelas
-        cartelas={cartelas}
-        bolasSelecionadas={bolasSelecionadas}
-        etapasAlcancadas={etapasAlcancadas}
-      />
-
-      {etapasAlcancadas.includes(100) && !encerrado && (
-        <button
-          onClick={async () => {
-            const dados = {
-              codigoSorteio: codigo,
-              bolas: bolasSelecionadas,
-              premiados: premios,
-              resumo: resumoFinanceiro,
-              encerradoEm: new Date().toISOString()
-            };
-            const { error } = await supabase.from("resultados").insert([dados]);
-            if (error) {
-              setMensagem("❌ Erro ao encerrar sorteio!");
-            } else {
-              setMensagem("✅ Sorteio encerrado e salvo com sucesso!");
-              setEncerrado(true);
-            }
-          }}
-          style={{
-            marginTop: "30px",
-            border: "2px solid #00ff00",
-            backgroundColor: "transparent",
-            color: "#00ff00",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
-          ENCERRAR SORTEIO
-        </button>
-      )}
-
-      {mensagem && (
-        <p style={{ marginTop: "20px", fontWeight: "bold", color: mensagem.includes("✅") ? "#00ff00" : "red" }}>
-          {mensagem}
-        </p>
-      )}
     </div>
   );
 }

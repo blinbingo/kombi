@@ -207,39 +207,48 @@ export default function SorteioManual() {
         etapasAlcancadas={etapasAlcancadas}
       />
 
-      {etapasAlcancadas.includes(100) && !encerrado && (
-        <button
-          onClick={async () => {
-          const { error } = await supabase
-  .from("bingo")
-  .update({
-    // ...
-  })
-  .eq("codigoSorteio", codigo);
+{etapasAlcancadas.includes(100) && !encerrado && (
+  <button
+    onClick={async () => {
+      console.log("Código que será usado no WHERE:", codigo);
 
-console.log("CÓDIGO DO SORTEIO:", codigo);
-console.log("ERRO:", error);
+      const { error } = await supabase
+        .from("bingo")
+        .update({
+          bolas: bolasSelecionadas,
+          premiados: {
+            25: Object.fromEntries((premios[25] || []).map((c) => [c, 10])),
+            50: Object.fromEntries((premios[50] || []).map((c) => [c, 20])),
+            75: Object.fromEntries((premios[75] || []).map((c) => [c, 200])),
+            100: Object.fromEntries((premios[100] || []).map((c) => [c, 500]))
+          },
+          resumo: resumoFinanceiro,
+          encerradoEm: new Date().toISOString()
+        })
+        .eq("codigoSorteio", codigo);
 
-
-            if (error) {
-              setMensagem("❌ Erro ao encerrar sorteio!");
-            } else {
-              setMensagem("✅ Sorteio encerrado e salvo com sucesso!");
-              setEncerrado(true);
-            }
-          }}
-          style={{
-            marginTop: "30px",
-            border: "2px solid #00ff00",
-            backgroundColor: "transparent",
-            color: "#00ff00",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
-          ENCERRAR SORTEIO
+      if (error) {
+        console.error("Erro Supabase:", error);
+        setMensagem("❌ Erro ao encerrar sorteio!");
+      } else {
+        setMensagem("✅ Sorteio encerrado e salvo com sucesso!");
+        setEncerrado(true);
+      }
+    }}
+    style={{
+      marginTop: "30px",
+      border: "2px solid #00ff00",
+      backgroundColor: "transparent",
+      color: "#00ff00",
+      fontWeight: "bold",
+      padding: "10px 20px",
+      borderRadius: "6px",
+      cursor: "pointer"
+    }}
+  >
+    ENCERRAR SORTEIO
+  </button>
+)}
         </button>
       )}
 

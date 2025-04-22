@@ -215,10 +215,7 @@ export default function SorteioManual() {
             const { error } = await supabase
               .from("bingo")
               .update({
-                bolas: Array.isArray(bolasSelecionadas)
-  ? bolasSelecionadas.map((n) => parseInt(n, 10))
-  : [],
-
+                bolas: `{${bolasSelecionadas.map(Number).join(",")}}`,
                 premiados: {
                   25: Object.fromEntries((premios[25] || []).map((c) => [c, 10])),
                   50: Object.fromEntries((premios[50] || []).map((c) => [c, 20])),

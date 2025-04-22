@@ -210,9 +210,26 @@ export default function SorteioManual() {
 
       {etapasAlcancadas.includes(100) && !encerrado && (
         <button
-          onClick={async () => {
-            console.log("Código:", codigo);
-            const { error } = await supabase
+         onClick={async () => {
+  console.log("Código:", codigo);
+  console.log("🔢 bolas:", bolasSelecionadas);
+  console.log("✅ convertidas:", bolasSelecionadas.map(Number));
+
+  const { error } = await supabase
+    .from("bingo")
+    .upsert({
+      codigoSorteio: codigo,
+      bolas: bolasSelecionadas.map(Number),
+      premiados: {
+        25: Object.fromEntries((premios[25] || []).map((c) => [c, 10])),
+        50: Object.fromEntries((premios[50] || []).map((c) => [c, 20])),
+        75: Object.fromEntries((premios[75] || []).map((c) => [c, 200])),
+        100: Object.fromEntries((premios[100] || []).map((c) => [c, 500]))
+      },
+      resumo: resumoFinanceiro,
+      encerradoEm: new Date().toISOString()
+    }, { onConflict: ['codigoSorteio'] });
+
               .from("bingo")
               .update({
                 bolas: bolasSelecionadas,

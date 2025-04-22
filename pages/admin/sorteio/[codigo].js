@@ -70,10 +70,10 @@ export default function SorteioManual() {
 
     setPremios(novosPremios);
     setBolasPremioDesbloqueadas(novosDesbloqueios);
-    setEtapasAlcancancadas(novasEtapas);
+    setEtapasAlcancadas(novasEtapas);
 
     if (novasEtapas.includes(100)) {
-      const totalArrecadado = cartelas.length * 10; // ajuste conforme valorCartela real
+      const totalArrecadado = cartelas.length * 10; // Ajustável
       const totalPremiosPagos =
         (novosPremios[25]?.length || 0) * 10 +
         (novosPremios[50]?.length || 0) * 20 +
@@ -87,7 +87,7 @@ export default function SorteioManual() {
   const reiniciarTudo = () => {
     setBolasSelecionadas([]);
     setPremios({ 25: [], 50: [], 75: [], 100: [] });
-    setEtapasAlcancancadas([]);
+    setEtapasAlcancadas([]);
     setBolasPremioDesbloqueadas({});
     setResumoFinanceiro(null);
     setEncerrado(false);

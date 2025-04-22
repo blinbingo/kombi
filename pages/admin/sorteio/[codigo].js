@@ -18,19 +18,16 @@ export default function SorteioManual() {
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const [mensagem, setMensagem] = useState("");
   const [encerrado, setEncerrado] = useState(false);
-  const [confirmar, setConfirmar] = useState(false);
-  const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
   useEffect(() => {
     if (codigo) {
       async function carregarCartelas() {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("cartelas")
           .select("numeros")
           .eq("codigoSorteio", codigo);
-        if (!error && data) {
-          const lista = data.map((item) => item.numeros);
-          setCartelas(lista);
+        if (data) {
+          setCartelas(data.map((item) => item.numeros));
         }
       }
       carregarCartelas();
@@ -38,176 +35,16 @@ export default function SorteioManual() {
   }, [codigo]);
 
   const sortearBola = (num) => {
-    if (bolasSelecionadas.includes(num) || encerrado) return;
+    if (bolasSelecionadas.includes(num)) return;
     const novas = [...bolasSelecionadas, num];
     setBolasSelecionadas(novas);
-    atualizarPremios(novas);
-  };
-
-  const atualizarPremios = (bolas) => {
-    const metas = [25, 50, 75, 100];
-    const novaBola = bolas[bolas.length - 1];
-    const novasEtapas = [...etapasAlcancadas];
-    const novosPremios = { ...premios };
-    const novosDesbloqueios = { ...bolasPremioDesbloqueadas };
-
-    metas.forEach((meta) => {
-      if (!novasEtapas.includes(meta)) {
-        const ganhadoras = [];
-        cartelas.forEach((cartela, index) => {
-          const acertos = cartela.filter((num) => bolas.includes(num));
-          const porcentagem = Math.floor((acertos.length / 24) * 100);
-          if (porcentagem >= meta && cartela.includes(novaBola)) {
-            ganhadoras.push("C" + String(index + 1).padStart(4, "0"));
-          }
-        });
-        if (ganhadoras.length > 0) {
-          novosPremios[meta] = ganhadoras;
-          novosDesbloqueios[meta] = novaBola;
-          novasEtapas.push(meta);
-        }
-      }
-    });
-
-    setPremios(novosPremios);
-    setBolasPremioDesbloqueadas(novosDesbloqueios);
-    setEtapasAlcancadas(novasEtapas);
-
-    if (novasEtapas.includes(100)) {
-      const totalArrecadado = cartelas.length * 10;
-      const totalPremiosPagos =
-        (novosPremios[25]?.length || 0) * 10 +
-        (novosPremios[50]?.length || 0) * 20 +
-        (novosPremios[75]?.length || 0) * 200 +
-        (novosPremios[100]?.length || 0) * 500;
-      setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
-    }
-  };
-
-  const reiniciarTudo = () => {
-    setBolasSelecionadas([]);
-    setPremios({ 25: [], 50: [], 75: [], 100: [] });
-    setEtapasAlcancadas([]);
-    setBolasPremioDesbloqueadas({});
-    setResumoFinanceiro(null);
-    setEncerrado(false);
-    setMensagem("");
-    setConfirmar(false);
   };
 
   return (
-    <div className="body" style={{ textAlign: "center" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <button
-          onClick={() => router.push("/admin")}
-          style={{
-            border: "2px solid #00ff00",
-            color: "#00ff00",
-            backgroundColor: "transparent",
-            padding: "8px 16px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontWeight: "bold"
-          }}
-        >
-          ← Voltar
-        </button>
-
-        <div style={{ display: "flex", gap: "10px" }}>
-          {!confirmar ? (
-            <button
-              onClick={() => setConfirmar(true)}
-              style={{
-                padding: "8px 16px",
-                border: "2px solid #00ff00",
-                backgroundColor: "transparent",
-                color: "#00ff00",
-                fontWeight: "bold",
-                borderRadius: "6px",
-                cursor: "pointer"
-              }}
-            >
-              🔁 Reiniciar
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={reiniciarTudo}
-                style={{
-                  padding: "8px 16px",
-                  border: "2px solid red",
-                  backgroundColor: "transparent",
-                  color: "red",
-                  fontWeight: "bold",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Confirmar Reinício
-              </button>
-              <button
-                onClick={() => setConfirmar(false)}
-                style={{
-                  padding: "8px 16px",
-                  border: "2px solid gray",
-                  backgroundColor: "transparent",
-                  color: "gray",
-                  fontWeight: "bold",
-                  borderRadius: "6px",
-                  cursor: "pointer"
-                }}
-              >
-                Cancelar
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="bingo-board">
-        {numeros.map((num) => (
-          <div
-            key={num}
-            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
-            onClick={() => sortearBola(num)}
-            style={{ cursor: "pointer" }}
-          >
-            {num}
-          </div>
-        ))}
-      </div>
-
-      <div style={{
-        display: "flex",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        gap: "6px",
-        margin: "20px auto"
-      }}>
-        {bolasSelecionadas.map((bola, i) => (
-          <div
-            key={i}
-            className="bola"
-            style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}
-          >
-            {bola}
-          </div>
-        ))}
-      </div>
-
-      <CartelasPremiadas
-        premios={premios}
-        bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
-        resumoFinanceiro={resumoFinanceiro}
-      />
-
-      <RankingCartelas
-        cartelas={cartelas}
-        bolasSelecionadas={bolasSelecionadas}
-        etapasAlcancadas={etapasAlcancadas}
-      />
-
-{etapasAlcancadas.includes(100) && !encerrado && (
+    <div>
+      <h1>Sorteio Manual</h1>
+      <div>
+        etapasAlcancadas.includes(100) && !encerrado && (
   <button
     onClick={async () => {
       console.log("Código que será usado no WHERE:", codigo);
@@ -248,12 +85,10 @@ export default function SorteioManual() {
   >
     ENCERRAR SORTEIO
   </button>
-)}
-        </button>
-      )}
-
+)
+      </div>
       {mensagem && (
-        <p style={{ marginTop: "20px", fontWeight: "bold", color: mensagem.includes("✅") ? "#00ff00" : "red" }}>
+        <p style={ color: mensagem.includes("✅") ? "green" : "red" }>
           {mensagem}
         </p>
       )}

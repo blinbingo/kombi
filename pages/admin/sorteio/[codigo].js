@@ -109,7 +109,25 @@ export default function SorteioManual() {
           fontWeight: "bold"
         }}
       >
-        ← Voltar
+       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+  <button
+    onClick={() => router.push("/admin")}
+    style={{
+      border: "2px solid #00ff00",
+      color: "#00ff00",
+      backgroundColor: "transparent",
+      padding: "8px 16px",
+      borderRadius: "6px",
+      cursor: "pointer",
+      fontWeight: "bold"
+    }}
+  >
+    ← Voltar
+  </button>
+
+  <PainelControle2 onReiniciar={reiniciarTudo} />
+</div>
+
       </button>
 
       <div className="bingo-board">

@@ -24,11 +24,11 @@ export default function SorteioManual() {
 
   useEffect(() => {
     if (codigo) {
-      async function carregarCartelas() {
-        const { data, error } = await supabase
-          .from("cartelas")
-          .select("numeros")
-          }, { onConflict: ['codigoSorteio'] });
+     const { data, error } = await supabase
+  .from("cartelas")
+  .select("numeros")
+  .eq("codigoSorteio", codigo);
+
         if (!error && data) {
           const lista = data.map((item) => item.numeros);
           setCartelas(lista);

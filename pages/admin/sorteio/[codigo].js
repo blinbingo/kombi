@@ -28,7 +28,7 @@ export default function SorteioManual() {
         const { data, error } = await supabase
           .from("cartelas")
           .select("numeros")
-          .eq("codigoSorteio", codigo);
+          }, { onConflict: ['codigoSorteio'] });
         if (!error && data) {
           const lista = data.map((item) => item.numeros);
           setCartelas(lista);
@@ -214,7 +214,7 @@ export default function SorteioManual() {
             console.log("Código:", codigo);
             const { error } = await supabase
               .from("bingo")
-              .update({
+              .upsert({
                 bolas: bolasSelecionadas.map(Number),
                 premiados: {
                   25: Object.fromEntries((premios[25] || []).map((c) => [c, 10])),
@@ -225,7 +225,7 @@ export default function SorteioManual() {
                 resumo: resumoFinanceiro,
                 encerradoEm: new Date().toISOString()
               })
-              .eq("codigoSorteio", codigo);
+              }, { onConflict: ['codigoSorteio'] });
 
             if (error) {
               console.error("Erro ao salvar no Supabase:", error);

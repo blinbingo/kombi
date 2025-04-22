@@ -26,9 +26,7 @@ export default function SorteioManual() {
     if (codigo) {
       async function carregarCartelas() {
         const { data, error } = await supabase
-          .from("cartelas")
-          .select("numeros")
-          }, { onConflict: ['codigoSorteio'] });
+          .from("cartelas").select("numeros")}, { onConflict: ['codigoSorteio'] });
         if (!error && data) {
           const lista = data.map((item) => item.numeros);
           setCartelas(lista);

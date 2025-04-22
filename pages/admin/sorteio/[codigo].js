@@ -124,18 +124,7 @@ export default function SorteioManual() {
           </div>
         ))}
       </div>
-
-      <PainelControle
-        sorteando={false}
-        pausado={false}
-        sortearBola={() => {}}
-        iniciarSorteio={() => {}}
-        setPausado={() => {}}
-        confirmarReinicio={false}
-        setConfirmarReinicio={() => {}}
-        onConfirmarReinicio={reiniciarTudo}
-        finalizarSorteio={() => {}}
-      />
+<PainelControle2 onReiniciar={reiniciarTudo} />
 
       <div style={{
         display: "flex",

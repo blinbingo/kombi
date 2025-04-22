@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
-import PainelControle2 from "../../../components/PainelControle2";
 import HistoricoBolas from "../../../components/HistoricoBolas";
 import CartelasPremiadas from "../../../components/CartelasPremiadas";
 import RankingCartelas from "../../../components/RankingCartelas";
@@ -19,6 +18,7 @@ export default function SorteioManual() {
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const [mensagem, setMensagem] = useState("");
   const [encerrado, setEncerrado] = useState(false);
+  const [confirmar, setConfirmar] = useState(false);
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
   useEffect(() => {
@@ -92,43 +92,77 @@ export default function SorteioManual() {
     setResumoFinanceiro(null);
     setEncerrado(false);
     setMensagem("");
+    setConfirmar(false);
   };
 
   return (
     <div className="body" style={{ textAlign: "center" }}>
-      <button
-        onClick={() => router.push("/admin")}
-        style={{
-          marginBottom: "20px",
-          border: "2px solid #00ff00",
-          color: "#00ff00",
-          backgroundColor: "transparent",
-          padding: "8px 16px",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontWeight: "bold"
-        }}
-      >
-       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-  <button
-    onClick={() => router.push("/admin")}
-    style={{
-      border: "2px solid #00ff00",
-      color: "#00ff00",
-      backgroundColor: "transparent",
-      padding: "8px 16px",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontWeight: "bold"
-    }}
-  >
-    ← Voltar
-  </button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <button
+          onClick={() => router.push("/admin")}
+          style={{
+            border: "2px solid #00ff00",
+            color: "#00ff00",
+            backgroundColor: "transparent",
+            padding: "8px 16px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
+        >
+          ← Voltar
+        </button>
 
-  <PainelControle2 onReiniciar={reiniciarTudo} />
-</div>
-
-      </button>
+        <div style={{ display: "flex", gap: "10px" }}>
+          {!confirmar ? (
+            <button
+              onClick={() => setConfirmar(true)}
+              style={{
+                padding: "8px 16px",
+                border: "2px solid #00ff00",
+                backgroundColor: "transparent",
+                color: "#00ff00",
+                fontWeight: "bold",
+                borderRadius: "6px",
+                cursor: "pointer"
+              }}
+            >
+              🔁 Reiniciar
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={reiniciarTudo}
+                style={{
+                  padding: "8px 16px",
+                  border: "2px solid red",
+                  backgroundColor: "transparent",
+                  color: "red",
+                  fontWeight: "bold",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}
+              >
+                Confirmar Reinício
+              </button>
+              <button
+                onClick={() => setConfirmar(false)}
+                style={{
+                  padding: "8px 16px",
+                  border: "2px solid gray",
+                  backgroundColor: "transparent",
+                  color: "gray",
+                  fontWeight: "bold",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}
+              >
+                Cancelar
+              </button>
+            </>
+          )}
+        </div>
+      </div>
 
       <div className="bingo-board">
         {numeros.map((num) => (
@@ -142,7 +176,6 @@ export default function SorteioManual() {
           </div>
         ))}
       </div>
-<PainelControle2 onReiniciar={reiniciarTudo} />
 
       <div style={{
         display: "flex",
@@ -161,6 +194,57 @@ export default function SorteioManual() {
           </div>
         ))}
       </div>
+
+      <CartelasPremiadas
+        premios={premios}
+        bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
+        resumoFinanceiro={resumoFinanceiro}
+      />
+
+      <RankingCartelas
+        cartelas={cartelas}
+        bolasSelecionadas={bolasSelecionadas}
+        etapasAlcancadas={etapasAlcancadas}
+      />
+
+      {etapasAlcancadas.includes(100) && !encerrado && (
+        <button
+          onClick={async () => {
+            const dados = {
+              codigoSorteio: codigo,
+              bolas: bolasSelecionadas,
+              premiados: premios,
+              resumo: resumoFinanceiro,
+              encerradoEm: new Date().toISOString()
+            };
+            const { error } = await supabase.from("resultados").insert([dados]);
+            if (error) {
+              setMensagem("❌ Erro ao encerrar sorteio!");
+            } else {
+              setMensagem("✅ Sorteio encerrado e salvo com sucesso!");
+              setEncerrado(true);
+            }
+          }}
+          style={{
+            marginTop: "30px",
+            border: "2px solid #00ff00",
+            backgroundColor: "transparent",
+            color: "#00ff00",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
+          ENCERRAR SORTEIO
+        </button>
+      )}
+
+      {mensagem && (
+        <p style={{ marginTop: "20px", fontWeight: "bold", color: mensagem.includes("✅") ? "#00ff00" : "red" }}>
+          {mensagem}
+        </p>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
-import PainelControle from "../../../components/PainelControle";
+import PainelControle2 from "../../../components/PainelControle2";
 import HistoricoBolas from "../../../components/HistoricoBolas";
 import CartelasPremiadas from "../../../components/CartelasPremiadas";
 import RankingCartelas from "../../../components/RankingCartelas";

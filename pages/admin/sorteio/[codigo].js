@@ -24,11 +24,11 @@ export default function SorteioManual() {
 
   useEffect(() => {
     if (codigo) {
-     const { data, error } = await supabase
-  .from("cartelas")
-  .select("numeros")
-  .eq("codigoSorteio", codigo);
-
+      async function carregarCartelas() {
+        const { data, error } = await supabase
+          .from("cartelas")
+          .select("numeros")
+          }, { onConflict: ['codigoSorteio'] });
         if (!error && data) {
           const lista = data.map((item) => item.numeros);
           setCartelas(lista);
@@ -224,6 +224,7 @@ export default function SorteioManual() {
                 },
                 resumo: resumoFinanceiro,
                 encerradoEm: new Date().toISOString()
+              })
               }, { onConflict: ['codigoSorteio'] });
 
             if (error) {

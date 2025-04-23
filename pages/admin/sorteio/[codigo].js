@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
@@ -29,6 +28,7 @@ export default function SorteioManual() {
           .from("cartelas")
           .select("numeros")
           .eq("codigoSorteio", codigo);
+
         if (!error && data) {
           const lista = data.map((item) => item.numeros);
           setCartelas(lista);
@@ -211,22 +211,27 @@ export default function SorteioManual() {
       {etapasAlcancadas.includes(100) && !encerrado && (
         <button
           onClick={async () => {
-            console.log("Código:", codigo);
             const { error } = await supabase
-              .from("bingo")
-              .upsert({
-                codigoSorteio: codigo,
-                bolas: bolasSelecionadas,
-                premiados: {
-                  25: Object.fromEntries((premios[25] || []).map((c) => [c, 10])),
-                  50: Object.fromEntries((premios[50] || []).map((c) => [c, 20])),
-                  75: Object.fromEntries((premios[75] || []).map((c) => [c, 200])),
-                  100: Object.fromEntries((premios[100] || []).map((c) => [c, 500]))
-                },
-                resumo: resumoFinanceiro,
-                encerradoEm: new Date().toISOString()
-              })
-              .eq("codigoSorteio", codigo);
+              .from("historico")
+              .insert([
+                {
+                  codigoSorteio: codigo,
+                  encerradoEm: new Date().toISOString(),
+                  bolas: bolasSelecionadas.map((n) => parseInt(n, 10)),
+                  premiados: {
+                    25: Object.fromEntries((premios[25] || []).map((c) => [c, 10])),
+                    50: Object.fromEntries((premios[50] || []).map((c) => [c, 20])),
+                    75: Object.fromEntries((premios[75] || []).map((c) => [c, 200])),
+                    100: Object.fromEntries((premios[100] || []).map((c) => [c, 500]))
+                  },
+                  resumo: resumoFinanceiro,
+                  valorCartela: 10,
+                  premio25: 10,
+                  premio50: 20,
+                  premio75: 200,
+                  premio100: 500
+                }
+              ]);
 
             if (error) {
               console.error("Erro ao salvar no Supabase:", error);

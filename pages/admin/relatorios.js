@@ -4,10 +4,9 @@ import { supabase } from "../../utils/supabaseClient";
 export default function Relatorios() {
   const [sorteios, setSorteios] = useState([]);
   const [selecionado, setSelecionado] = useState(null);
-  const [confirmarExclusao, setConfirmarExclusao] = useState(null);
 
   useEffect(() => {
-    async function carregar() {
+    async function buscar() {
       const { data, error } = await supabase
         .from("bingo")
         .select("*")
@@ -15,135 +14,104 @@ export default function Relatorios() {
         .order("encerradoEm", { ascending: false });
       if (!error && data) setSorteios(data);
     }
-    carregar();
+    buscar();
   }, []);
 
-  const excluirSorteio = async (codigoSorteio) => {
-    await supabase.from("cartelas").delete().eq("codigoSorteio", codigoSorteio);
-    await supabase.from("bingo").delete().eq("codigoSorteio", codigoSorteio);
-    setSorteios((prev) => prev.filter((s) => s.codigoSorteio !== codigoSorteio));
-    setSelecionado(null);
-    setConfirmarExclusao(null);
+  const calcularLucro = (s) => {
+    if (!s.resumo) return "R$ 0,00";
+    const total = s.resumo.totalArrecadado - s.resumo.totalPremiosPagos;
+    return total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
+  const formatarData = (d) => new Date(d).toLocaleString("pt-BR");
+
   return (
-    <div style={{ padding: "20px", backgroundColor: "#0f172a", minHeight: "100vh", color: "white" }}>
-      <h1 style={{ textAlign: "center", color: "#00ff00" }}>Relatórios de Sorteios</h1>
+    <div style={{ padding: 30, background: "#0f172a", color: "white", minHeight: "100vh" }}>
+      <h2 style={{ textAlign: "center", color: "#00ff00" }}>Relatórios de Sorteios</h2>
 
-      {sorteios.map((s) => (
-        <div key={s.codigoSorteio} style={{
-          border: "2px solid #00ff00",
-          backgroundColor: "#111827",
-          padding: "16px",
-          borderRadius: "10px",
-          marginBottom: "20px",
-          boxShadow: "0 0 10px #00ff00"
-        }}>
-          <p><strong>Código:</strong> {s.codigoSorteio}</p>
-          <p><strong>Data:</strong> {new Date(s.encerradoEm).toLocaleString("pt-BR")}</p>
-          <p><strong>Total Arrecadado:</strong> R$ {s.resumo?.totalArrecadado?.toFixed(2)}</p>
-          <p><strong>Total Premiado:</strong> R$ {s.resumo?.totalPremiosPagos?.toFixed(2)}</p>
-
-          <button
-            onClick={() => setSelecionado(s)}
-            style={{
-              marginTop: "10px",
-              border: "2px solid #00ff00",
-              backgroundColor: "transparent",
-              color: "#00ff00",
-              padding: "8px 16px",
-              fontWeight: "bold",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
-            Ver Detalhes
-          </button>
-
-          {confirmarExclusao === s.codigoSorteio ? (
-            <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-              <button
-                onClick={() => excluirSorteio(s.codigoSorteio)}
-                style={{
-                  flex: 1,
-                  border: "2px solid red",
-                  backgroundColor: "transparent",
-                  color: "red",
-                  borderRadius: "6px",
-                  padding: "6px",
-                  fontWeight: "bold",
-                  cursor: "pointer"
-                }}
-              >
-                Confirmar Exclusão
-              </button>
-              <button
-                onClick={() => setConfirmarExclusao(null)}
-                style={{
-                  flex: 1,
-                  border: "2px solid gray",
-                  backgroundColor: "transparent",
-                  color: "gray",
-                  borderRadius: "6px",
-                  padding: "6px",
-                  fontWeight: "bold",
-                  cursor: "pointer"
-                }}
-              >
-                Cancelar
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setConfirmarExclusao(s.codigoSorteio)}
-              style={{
-                marginTop: "10px",
-                width: "100%",
-                border: "2px solid red",
-                backgroundColor: "transparent",
-                color: "red",
-                borderRadius: "6px",
-                padding: "6px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontSize: "13px"
-              }}
-            >
-              EXCLUIR
-            </button>
-          )}
-        </div>
-      ))}
+      <table style={{ margin: "20px auto", border: "2px solid #00ff00", boxShadow: "0 0 8px #00ff00", width: "100%", maxWidth: "1000px" }}>
+        <thead>
+          <tr>
+            <th style={celula}>Código</th>
+            <th style={celula}>Data</th>
+            <th style={celula}>Valor Cartela</th>
+            <th style={celula}>Arrecadado</th>
+            <th style={celula}>Pago</th>
+            <th style={celula}>Lucro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorteios.map((s) => (
+            <tr key={s.codigoSorteio} onClick={() => setSelecionado(s)} style={{ cursor: "pointer" }}>
+              <td style={celula}>{s.codigoSorteio}</td>
+              <td style={celula}>{formatarData(s.encerradoEm)}</td>
+              <td style={celula}>R$ {s.valorCartela?.toFixed(2)}</td>
+              <td style={celula}>R$ {s.resumo?.totalArrecadado?.toFixed(2)}</td>
+              <td style={celula}>R$ {s.resumo?.totalPremiosPagos?.toFixed(2)}</td>
+              <td style={celula}>{calcularLucro(s)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {selecionado && (
-        <div style={{
-          backgroundColor: "#111827",
-          border: "2px solid #00ff00",
-          padding: "20px",
-          borderRadius: "10px",
-          marginTop: "20px"
-        }}>
-          <h3>Detalhes do Sorteio {selecionado.codigoSorteio}</h3>
-          <p>Bolas sorteadas: {selecionado.bolas?.join(", ")}</p>
-          <p>Total Arrecadado: R$ {selecionado.resumo?.totalArrecadado}</p>
-          <p>Total Pago: R$ {selecionado.resumo?.totalPremiosPagos}</p>
-          <button
-            onClick={() => setSelecionado(null)}
-            style={{
-              marginTop: "10px",
-              padding: "6px 12px",
-              border: "2px solid #00ff00",
-              backgroundColor: "transparent",
-              color: "#00ff00",
-              borderRadius: "6px",
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
-          >
-            Fechar Detalhes
-          </button>
+        <div style={modal}>
+          <h3 style={{ color: "#00ff00" }}>Detalhes do Sorteio</h3>
+          <p><strong>Código:</strong> {selecionado.codigoSorteio}</p>
+          <p><strong>Data:</strong> {formatarData(selecionado.encerradoEm)}</p>
+          <p><strong>Valor da Cartela:</strong> R$ {selecionado.valorCartela?.toFixed(2)}</p>
+          <p><strong>Total de Cartelas:</strong> {selecionado.resumo ? (selecionado.resumo.totalArrecadado / selecionado.valorCartela).toFixed(0) : "-"}</p>
+          <p><strong>Premiação:</strong></p>
+          {["25", "50", "75", "100"].map((meta) => (
+            <p key={meta}>
+              {meta}%: R$ {selecionado[`premio${meta}`] || "-"}
+            </p>
+          ))}
+          <p><strong>Resumo:</strong></p>
+          <p>Total Arrecadado: R$ {selecionado.resumo?.totalArrecadado.toFixed(2)}</p>
+          <p>Total Pago: R$ {selecionado.resumo?.totalPremiosPagos.toFixed(2)}</p>
+          <p><strong>Bolas Sorteadas:</strong> {selecionado.bolas?.join(", ")}</p>
+          <p><strong>Cartelas Premiadas:</strong></p>
+          {selecionado.premiados && Object.entries(selecionado.premiados).map(([meta, ganhadores]) => (
+            <div key={meta}>
+              <p>{meta}%:</p>
+              <ul>
+                {Object.entries(ganhadores).map(([cod, valor]) => (
+                  <li key={cod}>{cod} - R$ {valor}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <button onClick={() => setSelecionado(null)} style={btnFechar}>Fechar</button>
         </div>
       )}
     </div>
   );
 }
+
+const celula = {
+  padding: "10px 20px",
+  border: "1px solid #00ff00",
+  textAlign: "center"
+};
+
+const modal = {
+  background: "#111827",
+  border: "2px solid #00ff00",
+  padding: 20,
+  borderRadius: 10,
+  width: "80%",
+  margin: "20px auto",
+  boxShadow: "0 0 12px #00ff00"
+};
+
+const btnFechar = {
+  marginTop: 20,
+  backgroundColor: "#00ff00",
+  color: "#000",
+  padding: "8px 16px",
+  fontWeight: "bold",
+  border: "none",
+  borderRadius: 6,
+  cursor: "pointer"
+};

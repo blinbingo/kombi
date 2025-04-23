@@ -7,121 +7,119 @@ export default function Relatorios() {
   const [selecionado, setSelecionado] = useState(null);
 
   useEffect(() => {
-    async function carregar() {
+    async function buscar() {
       const { data, error } = await supabase
         .from("bingo")
         .select("*")
         .order("encerradoEm", { ascending: false });
-      if (!error) setSorteios(data);
+
+      if (!error && data) {
+        const filtrado = data.filter((s) => s.encerradoEm);
+        setSorteios(filtrado);
+      }
     }
-    carregar();
+    buscar();
   }, []);
 
-  const calcularLucro = (resumo) =>
-    (resumo?.totalArrecadado || 0) - (resumo?.totalPremiosPagos || 0);
+  const calcularLucro = (s) => {
+    if (!s.resumo) return "R$ 0.00";
+    const total = s.resumo.totalArrecadado - s.resumo.totalPremiosPagos;
+    return total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const formatarData = (d) => new Date(d).toLocaleString("pt-BR");
 
   return (
-    <div style={{ padding: "20px", backgroundColor: "#0f172a", minHeight: "100vh", color: "white" }}>
-      <h1 style={{ textAlign: "center", color: "#00ff00" }}>Relatórios de Sorteios</h1>
+    <div style={{ padding: 30, background: "#0f172a", color: "white", minHeight: "100vh" }}>
+      <h2 style={{ textAlign: "center", color: "#00ff00" }}>Relatórios de Sorteios</h2>
 
-      <table style={{
-        width: "100%", maxWidth: "1000px", margin: "30px auto",
-        borderCollapse: "collapse", boxShadow: "0 0 10px #00ff00"
-      }}>
+      <table style={{ margin: "20px auto", border: "2px solid #00ff00", boxShadow: "0 0 8px #00ff00" }}>
         <thead>
-          <tr style={{ backgroundColor: "#111827", color: "#00ff00" }}>
-            <th style={td}>Código</th>
-            <th style={td}>Data</th>
-            <th style={td}>Valor Cartela</th>
-            <th style={td}>Arrecadado</th>
-            <th style={td}>Pago</th>
-            <th style={td}>Lucro</th>
+          <tr>
+            <th style={estiloCelula}>Código</th>
+            <th style={estiloCelula}>Data</th>
+            <th style={estiloCelula}>Valor Cartela</th>
+            <th style={estiloCelula}>Arrecadado</th>
+            <th style={estiloCelula}>Pago</th>
+            <th style={estiloCelula}>Lucro</th>
           </tr>
         </thead>
         <tbody>
           {sorteios.map((s) => (
-            <tr key={s.codigoSorteio} style={{ cursor: "pointer", backgroundColor: "#1e293b" }}
-              onClick={() => setSelecionado(s)}>
-              <td style={td}>{s.codigoSorteio}</td>
-              <td style={td}>{new Date(s.encerradoEm).toLocaleString("pt-BR")}</td>
-              <td style={td}>R$ {s.valorCartela?.toFixed(2)}</td>
-              <td style={td}>R$ {s.resumo?.totalArrecadado?.toFixed(2)}</td>
-              <td style={td}>R$ {s.resumo?.totalPremiosPagos?.toFixed(2)}</td>
-              <td style={td}>R$ {calcularLucro(s.resumo).toFixed(2)}</td>
+            <tr key={s.codigoSorteio} onClick={() => setSelecionado(s)} style={{ cursor: "pointer" }}>
+              <td style={estiloCelula}>{s.codigoSorteio}</td>
+              <td style={estiloCelula}>{formatarData(s.encerradoEm)}</td>
+              <td style={estiloCelula}>{s.valorCartela ? `R$ ${s.valorCartela.toFixed(2)}` : "R$ -"}</td>
+              <td style={estiloCelula}>
+                {s.resumo ? s.resumo.totalArrecadado.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "R$ -"}
+              </td>
+              <td style={estiloCelula}>
+                {s.resumo ? s.resumo.totalPremiosPagos.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "R$ -"}
+              </td>
+              <td style={estiloCelula}>{calcularLucro(s)}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {selecionado && (
-        <div style={{
-          backgroundColor: "#111827",
-          color: "white",
-          border: "2px solid #00ff00",
-          boxShadow: "0 0 10px #00ff00",
-          borderRadius: "10px",
-          padding: "20px",
-          position: "fixed",
-          top: "10%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "90%",
-          maxWidth: "800px",
-          zIndex: 1000
-        }}>
-          <h2 style={{ color: "#00ff00", marginBottom: "10px" }}>Detalhes do Sorteio</h2>
+        <div style={modal}>
+          <h3 style={{ color: "#00ff00" }}>Detalhes do Sorteio</h3>
           <p><strong>Código:</strong> {selecionado.codigoSorteio}</p>
-          <p><strong>Data:</strong> {new Date(selecionado.encerradoEm).toLocaleString("pt-BR")}</p>
-          <p><strong>Valor da Cartela:</strong> R$ {selecionado.valorCartela}</p>
-          <p><strong>Total de Cartelas:</strong> {selecionado?.resumo?.totalArrecadado / selecionado.valorCartela}</p>
-          <p><strong>Premiação:</strong> 25%: R$ {selecionado.premio25}, 50%: R$ {selecionado.premio50}, 75%: R$ {selecionado.premio75}, 100%: R$ {selecionado.premio100}</p>
-          <p><strong>Bolas sorteadas:</strong> {selecionado.bolas?.join(", ")}</p>
-          <p><strong>Resumo Financeiro:</strong></p>
-          <ul>
-            <li>Total Arrecadado: R$ {selecionado.resumo?.totalArrecadado}</li>
-            <li>Total de Prêmios Pagos: R$ {selecionado.resumo?.totalPremiosPagos}</li>
-            <li>Lucro: R$ {calcularLucro(selecionado.resumo)}</li>
-          </ul>
+          <p><strong>Data:</strong> {formatarData(selecionado.encerradoEm)}</p>
+          <p><strong>Valor da Cartela:</strong> R$ {selecionado.valorCartela?.toFixed(2)}</p>
+          <p><strong>Total de Cartelas:</strong> {selecionado.resumo ? selecionado.resumo.totalArrecadado / selecionado.valorCartela : "-"}</p>
+          <p><strong>Premiação:</strong></p>
+          {["25", "50", "75", "100"].map((meta) => (
+            <p key={meta}>
+              {meta}%: R$ {selecionado.premios?.[meta] || "-"}
+            </p>
+          ))}
+          <p><strong>Resumo:</strong></p>
+          <p>Total Arrecadado: {selecionado.resumo?.totalArrecadado.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
+          <p>Total Pago: {selecionado.resumo?.totalPremiosPagos.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</p>
+          <p><strong>Bolas Sorteadas:</strong> {selecionado.bolas?.join(", ")}</p>
           <p><strong>Cartelas Premiadas:</strong></p>
-          <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
-            <thead>
-              <tr>
-                <th style={td}>Nível</th>
-                <th style={td}>Cartela</th>
-                <th style={td}>Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(selecionado.premiados || {}).flatMap(([nivel, cartelas]) =>
-                Object.entries(cartelas).map(([cod, valor]) => (
-                  <tr key={nivel + cod}>
-                    <td style={td}>{nivel}%</td>
-                    <td style={td}>{cod}</td>
-                    <td style={td}>R$ {valor}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-          <button onClick={() => setSelecionado(null)} style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            border: "2px solid red",
-            backgroundColor: "transparent",
-            color: "red",
-            fontWeight: "bold",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}>Fechar</button>
+          {selecionado.premiados && Object.entries(selecionado.premiados).map(([meta, ganhadores]) => (
+            <div key={meta}>
+              <p>{meta}%:</p>
+              <ul>
+                {Object.entries(ganhadores).map(([cod, valor]) => (
+                  <li key={cod}>{cod} - R$ {valor}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <button onClick={() => setSelecionado(null)} style={btnFechar}>Fechar</button>
         </div>
       )}
     </div>
   );
 }
 
-const td = {
+const estiloCelula = {
+  padding: "10px 20px",
   border: "1px solid #00ff00",
-  padding: "8px",
   textAlign: "center"
+};
+
+const modal = {
+  background: "#111827",
+  border: "2px solid #00ff00",
+  padding: 20,
+  borderRadius: 10,
+  width: "80%",
+  margin: "20px auto",
+  boxShadow: "0 0 12px #00ff00"
+};
+
+const btnFechar = {
+  marginTop: 20,
+  backgroundColor: "#00ff00",
+  color: "#000",
+  padding: "8px 16px",
+  fontWeight: "bold",
+  border: "none",
+  borderRadius: 6,
+  cursor: "pointer"
 };

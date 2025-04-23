@@ -8,13 +8,17 @@ export default function AdminIndex() {
 
   useEffect(() => {
     async function buscar() {
-      const { data, error } = await supabase
-        .from("bingo")
-        .select("*")
-        .order("data", { ascending: false });
-      if (!error && data) {
-        setSorteios(data.filter((s) => !s.encerradoEm));
-      }
+
+const { data, error } = await supabase
+  .from("bingo")
+  .select("*")
+  .is("encerradoEm", null)
+  .order("data", { ascending: false });
+
+if (!error && data) {
+  setSorteios(data);
+}
+
     }
     buscar();
   }, []);

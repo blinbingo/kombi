@@ -35,14 +35,14 @@ export default function SimuladorDelay() {
       }
 
       if (dataSorteio) {
-        setValorCartela(dataSorteio.valorCartela || 1);
-        setTempoDelay(dataSorteio.delay || 5);
+        setValorCartela(Number(dataSorteio.valorCartela) || 1);
+        setTempoDelay(Number(dataSorteio.delay) || 5);
         setTitulo(dataSorteio.titulo || "");
         setValorPremios({
-          25: dataSorteio.premio25 || 1,
-          50: dataSorteio.premio50 || 1,
-          75: dataSorteio.premio75 || 1,
-          100: dataSorteio.premio100 || 1,
+          25: Number(dataSorteio.premio25) || 1,
+          50: Number(dataSorteio.premio50) || 1,
+          75: Number(dataSorteio.premio75) || 1,
+          100: Number(dataSorteio.premio100) || 1,
         });
       }
     };

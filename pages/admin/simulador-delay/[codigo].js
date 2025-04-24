@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import CartelasPremiadas from "../../../components/CartelasPremiadas";
 import RankingCartelas from "../../../components/RankingCartelas";

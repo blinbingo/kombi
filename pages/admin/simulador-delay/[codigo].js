@@ -1,145 +1,65 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { supabase } from "../../../utils/supabaseClient";
-import CartelasPremiadas from "../../../components/CartelasPremiadas";
-import RankingCartelas from "../../../components/RankingCartelas";
 
-export default function SimuladorDelay({ cartelas: propsCartelas, tempoDelay }) {
-  const [bolasSelecionadas, setBolasSelecionadas] = useState([]);
-  const [contador, setContador] = useState(null);
-  const [sorteando, setSorteando] = useState(false);
-  const [pausado, setPausado] = useState(false);
-  const [premios, setPremios] = useState({ 25: [], 50: [], 75: [], 100: [] });
-  const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
-  const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
-  const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
-  const [jaParouNo100, setJaParouNo100] = useState(false);
-  const [cartelas, setCartelas] = useState([]);
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { getSorteioByCodigo } from '@/utils/supabase/getSorteioByCodigo';
+import { sortearBolasAutomaticamente } from '@/utils/sorteio/sortearBolasAutomaticamente';
+import PainelControle from '@/components/PainelControle';
+import CartelasPremiadas from '@/components/CartelasPremiadas';
+import Ranking from '@/components/Ranking';
+import HistoricoBolas from '@/components/HistoricoBolas';
 
+export default function SimuladorDelay() {
   const router = useRouter();
   const { codigo } = router.query;
-
-  const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
+  const [sorteio, setSorteio] = useState(null);
+  const [delay, setDelay] = useState(2000); // delay padrão de 2 segundos
+  const [emAndamento, setEmAndamento] = useState(false);
+  const [reiniciar, setReiniciar] = useState(false);
 
   useEffect(() => {
     if (codigo) {
-      async function carregarCartelas() {
-        const { data, error } = await supabase
-          .from("cartelas")
-          .select("numeros")
-          .eq("codigoSorteio", codigo);
-
-        if (!error && data) {
-          const lista = data.map((item) => item.numeros);
-          setCartelas(lista);
-        } else {
-          console.error("Erro ao buscar cartelas", error);
-          setCartelas([]);
-        }
-      }
-
-      carregarCartelas();
+      carregarDados();
     }
   }, [codigo]);
 
-  useEffect(() => {
-    let timer;
-    if (sorteando && contador !== null && !pausado && !jaParouNo100) {
-      if (contador > 0) {
-        timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
-      } else {
-        sortearBola();
-        if (!jaParouNo100) {
-          setContador(tempoDelay);
-        }
-      }
-    }
-    return () => clearTimeout(timer);
-  }, [contador, sorteando, pausado]);
-
-  const sortearBola = () => {
-    if (jaParouNo100) return;
-    const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
-    if (disponiveis.length === 0) return;
-    const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
-    const novas = [...bolasSelecionadas, nova];
-    setBolasSelecionadas(novas);
-    atualizarPremios(novas);
-  };
-
-  const atualizarPremios = (bolas) => {
-    const metas = [25, 50, 75, 100];
-    const novaBola = bolas[bolas.length - 1];
-    const novasEtapas = [...etapasAlcancadas];
-    const novosPremios = { ...premios };
-    const novosDesbloqueios = { ...bolasPremioDesbloqueadas };
-
-    metas.forEach((meta) => {
-      if (!novasEtapas.includes(meta)) {
-        const ganhadoras = [];
-        (cartelas || []).forEach((cartela, index) => {
-          const acertos = cartela.filter((num) => bolas.includes(num));
-          const porcentagem = Math.floor((acertos.length / 24) * 100);
-          if (porcentagem >= meta && cartela.includes(novaBola)) {
-            ganhadoras.push("C" + String(index + 1).padStart(4, "0"));
-          }
-        });
-        if (ganhadoras.length > 0) {
-          novosPremios[meta] = ganhadoras;
-          novosDesbloqueios[meta] = novaBola;
-          novasEtapas.push(meta);
-        }
-      }
-    });
-
-    setPremios(novosPremios);
-    setBolasPremioDesbloqueadas(novosDesbloqueios);
-    setEtapasAlcancadas(novasEtapas);
-
-    if (novasEtapas.includes(100) && !jaParouNo100) {
-      const totalArrecadado = cartelas.length * 10;
-      const totalPremiosPagos =
-        (novosPremios[25]?.length || 0) * 10 +
-        (novosPremios[50]?.length || 0) * 20 +
-        (novosPremios[75]?.length || 0) * 200 +
-        (novosPremios[100]?.length || 0) * 500;
-      setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
-      setJaParouNo100(true);
-      setSorteando(false);
-      setContador(null);
-    }
+  const carregarDados = async () => {
+    const dados = await getSorteioByCodigo(codigo);
+    setSorteio(dados);
   };
 
   const iniciarSorteio = () => {
-    if (!sorteando) {
-      setSorteando(true);
-      setContador(tempoDelay);
+    if (sorteio) {
+      setEmAndamento(true);
+      sortearBolasAutomaticamente(sorteio, delay, () => {
+        setEmAndamento(false);
+      });
     }
   };
 
-  return (
-    <div className="body" style={{ textAlign: "center" }}>
-      <div className="bingo-board">
-        {numeros.map((num) => (
-          <div
-            key={num}
-            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
-          >
-            {num}
-          </div>
-        ))}
-      </div>
+  const handleReiniciar = () => {
+    setReiniciar(true);
+    setTimeout(() => setReiniciar(false), 100); // força recarregar filhos
+  };
 
-      <CartelasPremiadas
-        premios={premios}
-        bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
-        resumoFinanceiro={resumoFinanceiro}
+  return (
+    <div className="simulador-delay">
+      <h1>Simulador com Delay - Código: {codigo}</h1>
+
+      <PainelControle
+        delay={delay}
+        setDelay={setDelay}
+        onIniciar={iniciarSorteio}
+        onReiniciar={handleReiniciar}
+        emAndamento={emAndamento}
       />
-      <RankingCartelas
-        cartelas={cartelas || []}
-        bolasSelecionadas={bolasSelecionadas}
-        etapasAlcancadas={etapasAlcancadas}
-      />
+
+      {sorteio && !reiniciar && (
+        <>
+          <HistoricoBolas codigo={codigo} />
+          <Ranking codigo={codigo} />
+          <CartelasPremiadas codigo={codigo} />
+        </>
+      )}
     </div>
   );
 }

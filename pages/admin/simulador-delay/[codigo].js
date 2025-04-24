@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
@@ -15,11 +14,12 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const jaParouNo100 = useRef(false);
+  const router = useRouter();
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
   const sortearBola = () => {
     if (jaParouNo100.current) return;
-    const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
+    const disponiveis = numeros.filter(n => !bolasSelecionadas.includes(n));
     if (disponiveis.length === 0) return;
     const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
     const novas = [...bolasSelecionadas, nova];
@@ -58,8 +58,8 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
     setBolasPremioDesbloqueadas(novosDesbloqueios);
     setEtapasAlcancadas(novasEtapas);
 
-    if (novasEtapas.includes(100) && !jaParouNo100.current) {
-      const totalArrecadado = cartelas.length * 10;
+    if (novasEtapas.includes(100)) {
+      const totalArrecadado = (cartelas?.length || 0) * 10;
       const totalPremiosPagos =
         (novosPremios[25]?.length || 0) * 10 +
         (novosPremios[50]?.length || 0) * 20 +
@@ -94,17 +94,35 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
     }
   };
 
+  const reiniciarTudo = () => {
+    setBolasSelecionadas([]);
+    setPremios({ 25: [], 50: [], 75: [], 100: [] });
+    setEtapasAlcancadas([]);
+    setBolasPremioDesbloqueadas({});
+    setResumoFinanceiro(null);
+    setSorteando(false);
+    setContador(null);
+    setPausado(false);
+    jaParouNo100.current = false;
+  };
+
   return (
     <div className="body" style={{ textAlign: "center" }}>
       <div className="bingo-board">
         {numeros.map((num) => (
-          <div key={num} className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}>
+          <div
+            key={num}
+            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
+          >
             {num}
           </div>
         ))}
       </div>
 
-      <p className="cronometro-digital">Próxima bola em: {contador}s</p>
+      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "20px" }}>
+        <button onClick={iniciarSorteio}>Sortear Automático</button>
+        <button onClick={reiniciarTudo}>Reiniciar</button>
+      </div>
 
       <CartelasPremiadas
         premios={premios}

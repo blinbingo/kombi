@@ -1,17 +1,9 @@
+
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { supabase } from "../../../utils/supabaseClient";
-import PainelControle from "../../../components/PainelControle";
-import HistoricoBolas from "../../../components/HistoricoBolas";
-import CartelasPremiadas from "../../../components/CartelasPremiadas";
-import RankingCartelas from "../../../components/RankingCartelas";
+import CartelasPremiadas from "../../components/CartelasPremiadas";
+import RankingCartelas from "../../components/RankingCartelas";
 
-export default function SimuladorDelayManual() {
-  const router = useRouter();
-  const { codigo, delay } = router.query;
-  const tempoDelay = parseInt(delay) || 5;
-
-  const [cartelas, setCartelas] = useState([]);
+export default function SimuladorDelay({ cartelas, tempoDelay }) {
   const [bolasSelecionadas, setBolasSelecionadas] = useState([]);
   const [contador, setContador] = useState(null);
   const [sorteando, setSorteando] = useState(false);
@@ -20,28 +12,13 @@ export default function SimuladorDelayManual() {
   const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
-  const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
-  const jaParouNo100 = useState(false)[0];
+  const [jaParouNo100, setJaParouNo100] = useState(false);
+
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
-  useEffect(() => {
-    async function carregarCartelas() {
-      const { data, error } = await supabase
-        .from("cartelas")
-        .select("numeros")
-        .eq("codigoSorteio", codigo);
-
-      if (!error && data) {
-        const lista = data.map((item) => item.numeros);
-        setCartelas(lista);
-      }
-    }
-    if (codigo) carregarCartelas();
-  }, [codigo]);
-
   const sortearBola = () => {
-    if (jaParouNo100.current) return;
-    const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
+    if (jaParouNo100) return;
+    const disponiveis = numeros.filter(n => !bolasSelecionadas.includes(n));
     if (disponiveis.length === 0) return;
     const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
     const novas = [...bolasSelecionadas, nova];
@@ -78,14 +55,15 @@ export default function SimuladorDelayManual() {
     setBolasPremioDesbloqueadas(novosDesbloqueios);
     setEtapasAlcancadas(novasEtapas);
 
-    if (novasEtapas.includes(100) && !jaParouNo100.current) {
+    if (novasEtapas.includes(100) && !jaParouNo100) {
       const totalArrecadado = cartelas.length * 10;
-      const totalPremiosPagos = [25, 50, 75, 100].reduce(
-        (acc, p) => acc + (novosPremios[p]?.length || 0) * [10, 20, 200, 500][[25, 50, 75, 100].indexOf(p)],
-        0
-      );
+      const totalPremiosPagos =
+        (novosPremios[25]?.length || 0) * 10 +
+        (novosPremios[50]?.length || 0) * 20 +
+        (novosPremios[75]?.length || 0) * 200 +
+        (novosPremios[100]?.length || 0) * 500;
       setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
-      jaParouNo100.current = true;
+      setJaParouNo100(true);
       setSorteando(false);
       setContador(null);
     }
@@ -93,12 +71,12 @@ export default function SimuladorDelayManual() {
 
   useEffect(() => {
     let timer;
-    if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
+    if (sorteando && contador !== null && !pausado && !jaParouNo100) {
       if (contador > 0) {
         timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
       } else {
         sortearBola();
-        if (!jaParouNo100.current) {
+        if (!jaParouNo100) {
           setContador(tempoDelay);
         }
       }
@@ -106,44 +84,42 @@ export default function SimuladorDelayManual() {
     return () => clearTimeout(timer);
   }, [contador, sorteando, pausado]);
 
-  const iniciarSorteio = () => {
-    if (!sorteando) {
-      setSorteando(true);
-      setContador(tempoDelay);
-    }
-  };
-
-  const reiniciarTudo = () => {
-    setBolasSelecionadas([]);
-    setPremios({ 25: [], 50: [], 75: [], 100: [] });
-    setEtapasAlcancadas([]);
-    setBolasPremioDesbloqueadas({});
-    setResumoFinanceiro(null);
-    setSorteando(false);
-    setContador(null);
-    setPausado(false);
-    setMostrarConfirmacao(false);
-    jaParouNo100.current = false;
-  };
+  useEffect(() => {
+    setSorteando(true);
+    setContador(tempoDelay);
+  }, []);
 
   return (
     <div className="body" style={{ textAlign: "center" }}>
-      <PainelControle
-        sorteando={sorteando}
-        pausado={pausado}
-        sortearBola={sortearBola}
-        iniciarSorteio={iniciarSorteio}
-        setPausado={setPausado}
-        confirmarReinicio={mostrarConfirmacao}
-        setConfirmarReinicio={setMostrarConfirmacao}
-        onConfirmarReinicio={reiniciarTudo}
-      />
+      <div className="bingo-board">
+        {numeros.map((num) => (
+          <div
+            key={num}
+            className={`bola ${bolasSelecionadas.includes(num) ? "selecionada" : ""}`}
+          >
+            {num}
+          </div>
+        ))}
+      </div>
 
-      {sorteando && contador !== null && (
-        <p className="cronometro-digital">Próxima bola em: {contador}s</p>
-      )}
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        gap: "6px",
+        marginTop: "10px",
+      }}>
+        {bolasSelecionadas.map((bola, i) => (
+          <div
+            key={i}
+            className="bola"
+            style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}
+          >
+            {bola}
+          </div>
+        ))}
+      </div>
 
-      <HistoricoBolas bolas={bolasSelecionadas} />
       <CartelasPremiadas
         premios={premios}
         bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}

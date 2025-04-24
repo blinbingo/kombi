@@ -6,7 +6,7 @@ import { supabase } from "../../../utils/supabaseClient";
 
 export default function SimuladorDelay() {
   const router = useRouter();
-  const { codigo } = router.query;
+  const { codigo, delay: delayQuery } = router.query;
 
   const [cartelas, setCartelas] = useState([]);
   const [valorCartela, setValorCartela] = useState(1);
@@ -25,7 +25,7 @@ export default function SimuladorDelay() {
 
       const { data: dataSorteio } = await supabase
         .from("bingo")
-        .select("valorCartela, premio25, premio50, premio75, premio100, delay, titulo")
+        .select("valorCartela, premio25, premio50, premio75, premio100, titulo")
         .eq("codigoSorteio", codigo)
         .single();
 
@@ -36,7 +36,6 @@ export default function SimuladorDelay() {
 
       if (dataSorteio) {
         setValorCartela(Number(dataSorteio.valorCartela) || 1);
-        setTempoDelay(Number(dataSorteio.delay) || 5);
         setTitulo(dataSorteio.titulo || "");
         setValorPremios({
           25: Number(dataSorteio.premio25) || 1,
@@ -45,10 +44,14 @@ export default function SimuladorDelay() {
           100: Number(dataSorteio.premio100) || 1,
         });
       }
+
+      if (delayQuery) {
+        setTempoDelay(Number(delayQuery));
+      }
     };
 
     carregarDados();
-  }, [codigo]);
+  }, [codigo, delayQuery]);
 
   return (
     <>

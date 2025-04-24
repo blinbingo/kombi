@@ -1,8 +1,8 @@
-
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import CartelasPremiadas from "../../../components/CartelasPremiadas";
 import RankingCartelas from "../../../components/RankingCartelas";
-
+import HistoricoBolas from "../../../components/HistoricoBolas";
 
 export default function SimuladorDelay({ cartelas, tempoDelay }) {
   const [bolasSelecionadas, setBolasSelecionadas] = useState([]);
@@ -13,12 +13,12 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
   const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
-  const [jaParouNo100, setJaParouNo100] = useState(false);
+  const jaParouNo100 = useRef(false);
 
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
   const sortearBola = () => {
-    if (jaParouNo100) return;
+    if (jaParouNo100.current) return;
     const disponiveis = numeros.filter(n => !bolasSelecionadas.includes(n));
     if (disponiveis.length === 0) return;
     const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
@@ -56,15 +56,16 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
     setBolasPremioDesbloqueadas(novosDesbloqueios);
     setEtapasAlcancadas(novasEtapas);
 
-    if (novasEtapas.includes(100) && !jaParouNo100) {
+    if (novasEtapas.includes(100) && !jaParouNo100.current) {
       const totalArrecadado = cartelas.length * 10;
       const totalPremiosPagos =
         (novosPremios[25]?.length || 0) * 10 +
         (novosPremios[50]?.length || 0) * 20 +
         (novosPremios[75]?.length || 0) * 200 +
         (novosPremios[100]?.length || 0) * 500;
+
       setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
-      setJaParouNo100(true);
+      jaParouNo100.current = true;
       setSorteando(false);
       setContador(null);
     }
@@ -72,12 +73,12 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
 
   useEffect(() => {
     let timer;
-    if (sorteando && contador !== null && !pausado && !jaParouNo100) {
+    if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
       if (contador > 0) {
         timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
       } else {
         sortearBola();
-        if (!jaParouNo100) {
+        if (!jaParouNo100.current) {
           setContador(tempoDelay);
         }
       }
@@ -85,10 +86,24 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
     return () => clearTimeout(timer);
   }, [contador, sorteando, pausado]);
 
-  useEffect(() => {
-    setSorteando(true);
-    setContador(tempoDelay);
-  }, []);
+  const iniciarSorteio = () => {
+    if (!sorteando) {
+      setSorteando(true);
+      setContador(tempoDelay);
+    }
+  };
+
+  const reiniciarTudo = () => {
+    setBolasSelecionadas([]);
+    setPremios({ 25: [], 50: [], 75: [], 100: [] });
+    setEtapasAlcancadas([]);
+    setBolasPremioDesbloqueadas({});
+    setResumoFinanceiro(null);
+    jaParouNo100.current = false;
+    setSorteando(false);
+    setContador(null);
+    setPausado(false);
+  };
 
   return (
     <div className="body" style={{ textAlign: "center" }}>
@@ -103,29 +118,20 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
         ))}
       </div>
 
-      <div style={{
-        display: "flex",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        gap: "6px",
-        marginTop: "10px",
-      }}>
-        {bolasSelecionadas.map((bola, i) => (
-          <div
-            key={i}
-            className="bola"
-            style={{ width: "32px", height: "32px", fontSize: "0.85rem" }}
-          >
-            {bola}
-          </div>
-        ))}
+      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "20px" }}>
+        <button onClick={sortearBola}>Sortear Bola</button>
+        <button onClick={iniciarSorteio}>Sortear Automático</button>
+        <button onClick={reiniciarTudo}>Reiniciar</button>
       </div>
+
+      <HistoricoBolas bolas={bolasSelecionadas} />
 
       <CartelasPremiadas
         premios={premios}
         bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
         resumoFinanceiro={resumoFinanceiro}
       />
+
       <RankingCartelas
         cartelas={cartelas}
         bolasSelecionadas={bolasSelecionadas}

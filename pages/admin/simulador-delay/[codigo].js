@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { getSorteioByCodigo } from '../../../utils/supabase/getSorteioByCodigo';
-import { sortearBolasAutomaticamente } from '../../../utils/sorteio/sortearBolasAutomaticamente';
+import { getSorteioByCodigo } from '../../../utils/getSorteioByCodigo';
+import { sortearBolasAutomaticamente } from '../../../utils/sortearBolasAutomaticamente';
 import PainelControle from '../../../components/PainelControle';
 import CartelasPremiadas from '../../../components/CartelasPremiadas';
 import Ranking from '../../../components/Ranking';

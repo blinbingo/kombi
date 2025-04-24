@@ -4,7 +4,7 @@ export async function getSorteioByCodigo(codigo) {
   const { data, error } = await supabase
     .from('bingo')
     .select('*')
-    .eq('codigo', codigo)
+    .eq('codigoSorteio', codigo)
     .single();
 
   if (error) {

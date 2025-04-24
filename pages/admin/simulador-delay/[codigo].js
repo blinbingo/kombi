@@ -12,94 +12,108 @@ export default function SimuladorDelay() {
   const [cartelas, setCartelas] = useState([]);
   const [bolasSorteadas, setBolasSorteadas] = useState([]);
   const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
-  const [premios, setPremios] = useState({ 25: [], 50: [], 75: [], 100: [] });
+  const [premios, setPremios] = useState({ 25: null, 50: null, 75: null, 100: null });
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
+  const [cronometro, setCronometro] = useState(null);
   const [delay, setDelay] = useState(5);
   const [emAndamento, setEmAndamento] = useState(false);
   const [indexAtual, setIndexAtual] = useState(0);
-
-  const intervaloRef = useRef(null);
-
   const numeros = useRef(Array.from({ length: 60 }, (_, i) => i + 1)).current;
+  const intervaloRef = useRef(null);
 
   useEffect(() => {
     if (!codigo) return;
-    async function carregarCartelas() {
-      const { data, error } = await supabase
+
+    const carregarDados = async () => {
+      const cartelasRes = await supabase
         .from("cartelas")
         .select("numeros")
         .eq("codigoSorteio", codigo);
 
-      if (!error && data) {
-        const lista = data.map((item) => item.numeros);
-        setCartelas(lista);
+      const sorteioRes = await supabase
+        .from("bingo")
+        .select("delay")
+        .eq("codigoSorteio", codigo)
+        .single();
+
+      if (cartelasRes.data) {
+        setCartelas(cartelasRes.data.map(c => c.numeros));
+      }
+
+      if (sorteioRes.data?.delay) {
+        setDelay(parseInt(sorteioRes.data.delay));
+      }
+    };
+
+    carregarDados();
+  }, [codigo]);
+
+  useEffect(() => {
+    let timer;
+    if (cronometro !== null && emAndamento) {
+      if (cronometro > 0) {
+        timer = setTimeout(() => setCronometro(prev => prev - 1), 1000);
+      } else {
+        sortearProximaBola();
       }
     }
-    carregarCartelas();
-  }, [codigo]);
+    return () => clearTimeout(timer);
+  }, [cronometro, emAndamento]);
+
+  const embaralhar = (array) => {
+    const copia = [...array];
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
+  };
 
   const iniciarSorteio = () => {
     if (emAndamento) return;
-
-    const sequencia = embaralhar([...numeros]);
     setBolasSorteadas([]);
-    setIndexAtual(0);
     setEtapasAlcancadas([]);
-    setPremios({ 25: [], 50: [], 75: [], 100: [] });
+    setPremios({ 25: null, 50: null, 75: null, 100: null });
     setBolasPremioDesbloqueadas({});
     setResumoFinanceiro(null);
+    setIndexAtual(0);
     setEmAndamento(true);
-
-    intervaloRef.current = setInterval(() => {
-      setIndexAtual((prev) => {
-        const proximo = prev + 1;
-        const novas = sequencia.slice(0, proximo);
-        setBolasSorteadas(novas);
-        verificarPremios(novas);
-
-        if (etapasAlcancadas.includes(100)) {
-          clearInterval(intervaloRef.current);
-          setEmAndamento(false);
-        }
-
-        return proximo;
-      });
-    }, delay * 1000);
+    numeros.sort(() => Math.random() - 0.5); // embaralhar
+    setCronometro(delay);
   };
 
-  const embaralhar = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+  const sortearProximaBola = () => {
+    const disponiveis = numeros.filter((n) => !bolasSorteadas.includes(n));
+    if (disponiveis.length === 0) return;
+
+    const proxima = disponiveis[0];
+    const novas = [...bolasSorteadas, proxima];
+    setBolasSorteadas(novas);
+    verificarPremios(novas, proxima);
   };
 
-  const verificarPremios = (bolas) => {
+  const verificarPremios = (bolas, novaBola) => {
     const metas = [25, 50, 75, 100];
-    const novaBola = bolas[bolas.length - 1];
     const novasEtapas = [...etapasAlcancadas];
     const novosPremios = { ...premios };
     const novosDesbloqueios = { ...bolasPremioDesbloqueadas };
 
-    metas.forEach((meta) => {
+    for (const meta of metas) {
       if (!novasEtapas.includes(meta)) {
-        const ganhadoras = [];
-        cartelas.forEach((cartela, index) => {
-          const acertos = cartela.filter((n) => bolas.includes(n));
+        for (let i = 0; i < cartelas.length; i++) {
+          const acertos = cartelas[i].filter((n) => bolas.includes(n));
           const porcentagem = Math.floor((acertos.length / 24) * 100);
-          if (porcentagem >= meta && cartela.includes(novaBola)) {
-            ganhadoras.push("C" + String(index + 1).padStart(4, "0"));
+          if (porcentagem >= meta && cartelas[i].includes(novaBola)) {
+            const ganhadora = "C" + String(i + 1).padStart(4, "0");
+            novosPremios[meta] = ganhadora;
+            novosDesbloqueios[meta] = novaBola;
+            novasEtapas.push(meta);
+            break; // para no primeiro
           }
-        });
-        if (ganhadoras.length > 0) {
-          novosPremios[meta] = ganhadoras;
-          novosDesbloqueios[meta] = novaBola;
-          novasEtapas.push(meta);
         }
       }
-    });
+    }
 
     setPremios(novosPremios);
     setBolasPremioDesbloqueadas(novosDesbloqueios);
@@ -107,45 +121,45 @@ export default function SimuladorDelay() {
 
     if (novasEtapas.includes(100)) {
       const totalArrecadado = cartelas.length * 10;
-      const totalPremiosPagos =
-        (novosPremios[25]?.length || 0) * 10 +
-        (novosPremios[50]?.length || 0) * 20 +
-        (novosPremios[75]?.length || 0) * 200 +
-        (novosPremios[100]?.length || 0) * 500;
+      const totalPremiosPagos = 
+        (novosPremios[25] ? 10 : 0) +
+        (novosPremios[50] ? 20 : 0) +
+        (novosPremios[75] ? 200 : 0) +
+        (novosPremios[100] ? 500 : 0);
       setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
+      setEmAndamento(false);
+      setCronometro(null);
+    } else {
+      setCronometro(delay);
     }
   };
 
-  const reiniciarSorteio = () => {
+  const reiniciar = () => {
     clearInterval(intervaloRef.current);
     setBolasSorteadas([]);
     setEtapasAlcancadas([]);
-    setPremios({ 25: [], 50: [], 75: [], 100: [] });
+    setPremios({ 25: null, 50: null, 75: null, 100: null });
     setBolasPremioDesbloqueadas({});
     setResumoFinanceiro(null);
-    setEmAndamento(false);
     setIndexAtual(0);
+    setEmAndamento(false);
+    setCronometro(null);
   };
 
   return (
     <div className="body" style={{ textAlign: "center" }}>
-      <div className="card">
-        <h2>Sorteio com Delay</h2>
-        <label>Delay entre bolas (segundos):</label>
-        <input
-          type="number"
-          min="1"
-          value={delay}
-          onChange={(e) => setDelay(Math.max(1, parseInt(e.target.value) || 1))}
-        />
-        <br />
-        <button className="generate-button" onClick={iniciarSorteio} disabled={emAndamento}>
-          ▶️ Iniciar Sorteio
-        </button>
-        <button onClick={reiniciarSorteio} disabled={emAndamento} style={{ marginLeft: 10 }}>
-          🔁 Reiniciar
-        </button>
-      </div>
+      <h2>Sorteio com Delay - Código: {codigo}</h2>
+      {emAndamento && cronometro !== null && (
+        <div style={{ fontSize: "1.5rem", marginBottom: 10 }}>
+          Próxima bola em: {cronometro}s
+        </div>
+      )}
+      <button className="generate-button" onClick={iniciarSorteio} disabled={emAndamento}>
+        ▶️ Iniciar Sorteio
+      </button>
+      <button onClick={reiniciar} disabled={emAndamento} style={{ marginLeft: 10 }}>
+        🔁 Reiniciar
+      </button>
 
       <div className="bingo-board">
         {numeros.map((num) => (

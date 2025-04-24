@@ -1,7 +1,8 @@
 
 import React, { useEffect, useState } from "react";
-import CartelasPremiadas from "../../components/CartelasPremiadas";
-import RankingCartelas from "../../components/RankingCartelas";
+import CartelasPremiadas from "../../../components/CartelasPremiadas";
+import RankingCartelas from "../../../components/RankingCartelas";
+
 
 export default function SimuladorDelay({ cartelas, tempoDelay }) {
   const [bolasSelecionadas, setBolasSelecionadas] = useState([]);

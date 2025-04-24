@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
 import CartelasPremiadas from "../../../components/CartelasPremiadas";
 import RankingCartelas from "../../../components/RankingCartelas";
 
-export default function SimuladorDelay({ cartelas, tempoDelay }) {
+export default function SimuladorDelay({ cartelas: propsCartelas, tempoDelay }) {
   const [bolasSelecionadas, setBolasSelecionadas] = useState([]);
   const [contador, setContador] = useState(null);
   const [sorteando, setSorteando] = useState(false);
@@ -13,13 +13,53 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
   const [etapasAlcancadas, setEtapasAlcancadas] = useState([]);
   const [bolasPremioDesbloqueadas, setBolasPremioDesbloqueadas] = useState({});
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
-  const jaParouNo100 = useRef(false);
+  const [jaParouNo100, setJaParouNo100] = useState(false);
+  const [cartelas, setCartelas] = useState([]);
+
   const router = useRouter();
+  const { codigo } = router.query;
+
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
 
+  useEffect(() => {
+    if (codigo) {
+      async function carregarCartelas() {
+        const { data, error } = await supabase
+          .from("cartelas")
+          .select("numeros")
+          .eq("codigoSorteio", codigo);
+
+        if (!error && data) {
+          const lista = data.map((item) => item.numeros);
+          setCartelas(lista);
+        } else {
+          console.error("Erro ao buscar cartelas", error);
+          setCartelas([]);
+        }
+      }
+
+      carregarCartelas();
+    }
+  }, [codigo]);
+
+  useEffect(() => {
+    let timer;
+    if (sorteando && contador !== null && !pausado && !jaParouNo100) {
+      if (contador > 0) {
+        timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
+      } else {
+        sortearBola();
+        if (!jaParouNo100) {
+          setContador(tempoDelay);
+        }
+      }
+    }
+    return () => clearTimeout(timer);
+  }, [contador, sorteando, pausado]);
+
   const sortearBola = () => {
-    if (jaParouNo100.current) return;
-    const disponiveis = numeros.filter(n => !bolasSelecionadas.includes(n));
+    if (jaParouNo100) return;
+    const disponiveis = numeros.filter((n) => !bolasSelecionadas.includes(n));
     if (disponiveis.length === 0) return;
     const nova = disponiveis[Math.floor(Math.random() * disponiveis.length)];
     const novas = [...bolasSelecionadas, nova];
@@ -37,15 +77,13 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
     metas.forEach((meta) => {
       if (!novasEtapas.includes(meta)) {
         const ganhadoras = [];
-        if (Array.isArray(cartelas)) {
-          cartelas.forEach((cartela, index) => {
-            const acertos = cartela.filter((num) => bolas.includes(num));
-            const porcentagem = Math.floor((acertos.length / 24) * 100);
-            if (porcentagem >= meta && cartela.includes(novaBola)) {
-              ganhadoras.push("C" + String(index + 1).padStart(4, "0"));
-            }
-          });
-        }
+        (cartelas || []).forEach((cartela, index) => {
+          const acertos = cartela.filter((num) => bolas.includes(num));
+          const porcentagem = Math.floor((acertos.length / 24) * 100);
+          if (porcentagem >= meta && cartela.includes(novaBola)) {
+            ganhadoras.push("C" + String(index + 1).padStart(4, "0"));
+          }
+        });
         if (ganhadoras.length > 0) {
           novosPremios[meta] = ganhadoras;
           novosDesbloqueios[meta] = novaBola;
@@ -58,52 +96,25 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
     setBolasPremioDesbloqueadas(novosDesbloqueios);
     setEtapasAlcancadas(novasEtapas);
 
-    if (novasEtapas.includes(100)) {
-      const totalArrecadado = (cartelas?.length || 0) * 10;
+    if (novasEtapas.includes(100) && !jaParouNo100) {
+      const totalArrecadado = cartelas.length * 10;
       const totalPremiosPagos =
         (novosPremios[25]?.length || 0) * 10 +
         (novosPremios[50]?.length || 0) * 20 +
         (novosPremios[75]?.length || 0) * 200 +
         (novosPremios[100]?.length || 0) * 500;
       setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
-      jaParouNo100.current = true;
+      setJaParouNo100(true);
       setSorteando(false);
       setContador(null);
     }
   };
-
-  useEffect(() => {
-    let timer;
-    if (sorteando && contador !== null && !pausado && !jaParouNo100.current) {
-      if (contador > 0) {
-        timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
-      } else {
-        sortearBola();
-        if (!jaParouNo100.current) {
-          setContador(tempoDelay);
-        }
-      }
-    }
-    return () => clearTimeout(timer);
-  }, [contador, sorteando, pausado]);
 
   const iniciarSorteio = () => {
     if (!sorteando) {
       setSorteando(true);
       setContador(tempoDelay);
     }
-  };
-
-  const reiniciarTudo = () => {
-    setBolasSelecionadas([]);
-    setPremios({ 25: [], 50: [], 75: [], 100: [] });
-    setEtapasAlcancadas([]);
-    setBolasPremioDesbloqueadas({});
-    setResumoFinanceiro(null);
-    setSorteando(false);
-    setContador(null);
-    setPausado(false);
-    jaParouNo100.current = false;
   };
 
   return (
@@ -119,19 +130,13 @@ export default function SimuladorDelay({ cartelas, tempoDelay }) {
         ))}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "20px" }}>
-        <button onClick={iniciarSorteio}>Sortear Automático</button>
-        <button onClick={reiniciarTudo}>Reiniciar</button>
-      </div>
-
       <CartelasPremiadas
         premios={premios}
         bolasPremioDesbloqueadas={bolasPremioDesbloqueadas}
         resumoFinanceiro={resumoFinanceiro}
       />
-
       <RankingCartelas
-        cartelas={cartelas}
+        cartelas={cartelas || []}
         bolasSelecionadas={bolasSelecionadas}
         etapasAlcancadas={etapasAlcancadas}
       />

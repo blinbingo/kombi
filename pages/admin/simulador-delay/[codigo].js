@@ -5,7 +5,7 @@ import { getSorteioByCodigo } from '../../../utils/getSorteioByCodigo';
 import { sortearBolasAutomaticamente } from '../../../utils/sortearBolasAutomaticamente';
 import PainelControle from '../../../components/PainelControle';
 import CartelasPremiadas from '../../../components/CartelasPremiadas';
-import Ranking from '../../../components/Ranking';
+import Ranking from '../../../components/RankingCartelas';
 import HistoricoBolas from '../../../components/HistoricoBolas';
 
 export default function SimuladorDelay() {

@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
 import CartelasPremiadas from "../../../components/CartelasPremiadas";
 import RankingCartelas from "../../../components/RankingCartelas";
+import PainelControle from "../../../components/PainelControle"; // painel importado
 
 export default function SimuladorDelay() {
   const router = useRouter();
@@ -19,6 +21,7 @@ export default function SimuladorDelay() {
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const jaParouNo100 = useRef(false);
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
+  const [delay, setDelay] = useState(2000); // Delay configurável via painel
 
   useEffect(() => {
     if (!codigo) return;
@@ -43,13 +46,11 @@ export default function SimuladorDelay() {
         timer = setTimeout(() => setContador((prev) => prev - 1), 1000);
       } else {
         sortearBola();
-        if (!jaParouNo100.current) setContador(tempoDelay);
+        if (!jaParouNo100.current) setContador(delay / 1000);
       }
     }
     return () => clearTimeout(timer);
   }, [contador, sorteando, pausado]);
-
-  const tempoDelay = 2; // Valor fixo ou substituir com delay do modal futuramente
 
   const sortearBola = () => {
     if (jaParouNo100.current) return;
@@ -107,7 +108,7 @@ export default function SimuladorDelay() {
   const iniciarSorteio = () => {
     if (!sorteando) {
       setSorteando(true);
-      setContador(tempoDelay);
+      setContador(delay / 1000);
     }
   };
 
@@ -125,22 +126,13 @@ export default function SimuladorDelay() {
 
   return (
     <div className="body" style={{ textAlign: "center" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-        <button onClick={() => router.push("/admin")} style={{
-          border: "2px solid #00ff00", color: "#00ff00",
-          background: "transparent", padding: "8px 16px",
-          borderRadius: "6px", cursor: "pointer", fontWeight: "bold"
-        }}>
-          ← Voltar
-        </button>
-        <button onClick={reiniciarTudo} style={{
-          border: "2px solid #00ff00", color: "#00ff00",
-          background: "transparent", padding: "8px 16px",
-          borderRadius: "6px", cursor: "pointer", fontWeight: "bold"
-        }}>
-          🔁 Reiniciar
-        </button>
-      </div>
+      <PainelControle
+        delay={delay}
+        setDelay={setDelay}
+        onIniciar={iniciarSorteio}
+        onReiniciar={reiniciarTudo}
+        emAndamento={sorteando}
+      />
 
       <div className="bingo-board">
         {numeros.map((num) => (

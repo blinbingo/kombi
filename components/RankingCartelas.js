@@ -26,7 +26,7 @@ export default function RankingCartelas({ cartelas, bolasSelecionadas, etapasAlc
     })
     .filter((item) => item.faltamQtd > 0)
     .sort((a, b) => a.faltamQtd - b.faltamQtd)
-    .slice(0, 35);
+    .slice(0, 50);
 
   return (
     <div>

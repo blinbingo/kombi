@@ -1,12 +1,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { getSorteioByCodigo } from '@/utils/supabase/getSorteioByCodigo';
-import { sortearBolasAutomaticamente } from '@/utils/sorteio/sortearBolasAutomaticamente';
-import PainelControle from '@/components/PainelControle';
-import CartelasPremiadas from '@/components/CartelasPremiadas';
-import Ranking from '@/components/Ranking';
-import HistoricoBolas from '@/components/HistoricoBolas';
+import { getSorteioByCodigo } from '../../utils/supabase/getSorteioByCodigo';
+import { sortearBolasAutomaticamente } from '../../utils/sorteio/sortearBolasAutomaticamente';
+import PainelControle from '../../components/PainelControle';
+import CartelasPremiadas from '../../components/CartelasPremiadas';
+import Ranking from '../../components/Ranking';
+import HistoricoBolas from '../../components/HistoricoBolas';
 
 export default function SimuladorDelay() {
   const router = useRouter();

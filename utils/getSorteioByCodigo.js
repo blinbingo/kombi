@@ -1,4 +1,4 @@
-import { supabase } from '../client';
+import { supabase } from './client';
 
 export async function getSorteioByCodigo(codigo) {
   const { data, error } = await supabase

@@ -80,7 +80,11 @@ export default function AdminIndex() {
                 Iniciar Sorteio
               </button>
               <button
-                onClick={() => router.push("/admin/simular/" + s.codigoSorteio)}
+                onClick={() => {
+                  const delay = prompt("Quantos segundos de delay entre as bolas?");
+                  if (!delay || isNaN(delay)) return alert("Delay inválido.");
+                  router.push(`/admin/simulador-delay/${s.codigoSorteio}?delay=${delay}`);
+                }}
                 style={{
                   padding: "6px",
                   flex: 1,

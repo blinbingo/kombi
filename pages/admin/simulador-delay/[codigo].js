@@ -37,8 +37,7 @@ export default function SimuladorDelay() {
         .single();
 
       if (dataCartelas) {
-        const lista = dataCartelas.map((item) => item.numeros);
-        setCartelas(lista);
+        setCartelas(dataCartelas.map((item) => item.numeros));
       }
 
       if (dataSorteio) {

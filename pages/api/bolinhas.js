@@ -1,5 +1,5 @@
 
-let memoriaBolinhas = {}; // Objeto em memória por codigoSorteio
+import { supabase } from '../../utils/supabaseClient';
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -9,8 +9,21 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Dados inválidos" });
     }
 
-    memoriaBolinhas[codigo] = numero;
-    console.log("📥 Bolinha recebida:", numero, "| Código:", codigo);
+    // Remove entrada anterior
+    await supabase.from("temp_bolinhas").delete().eq("codigoSorteio", codigo);
+
+    const { error } = await supabase.from("temp_bolinhas").insert([
+      {
+        codigoSorteio: codigo,
+        numero: numero
+      }
+    ]);
+
+    if (error) {
+      return res.status(500).json({ error: "Erro ao salvar a bolinha" });
+    }
+
+    console.log("📥 Bolinha salva no Supabase:", numero, "para", codigo);
     return res.status(200).json({ status: "ok" });
   }
 
@@ -21,11 +34,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Código não fornecido" });
     }
 
-    const numero = memoriaBolinhas[codigo] || null;
-    // Limpa após leitura para evitar repetição
-    if (numero) delete memoriaBolinhas[codigo];
+    const { data, error } = await supabase
+      .from("temp_bolinhas")
+      .select("numero")
+      .eq("codigoSorteio", codigo)
+      .single();
 
-    return res.status(200).json({ numero });
+    if (error || !data) {
+      return res.status(200).json({ numero: null });
+    }
+
+    await supabase.from("temp_bolinhas").delete().eq("codigoSorteio", codigo);
+
+    return res.status(200).json({ numero: data.numero });
   }
 
   return res.status(405).json({ error: "Método não permitido" });

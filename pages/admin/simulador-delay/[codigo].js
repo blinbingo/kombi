@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import SimuladorBingo from "../../../components/SimuladorBingo";
@@ -6,11 +5,11 @@ import { supabase } from "../../../utils/supabaseClient";
 
 export default function SimuladorDelay() {
   const router = useRouter();
-  const { codigo, delay: delayQuery } = router.query;
+  const { codigo } = router.query;
 
   const [cartelas, setCartelas] = useState([]);
-  const [valorCartela, setValorCartela] = useState(1);
-  const [valorPremios, setValorPremios] = useState({ 25: 1, 50: 1, 75: 1, 100: 1 });
+  const [valorCartela, setValorCartela] = useState(10);
+  const [valorPremios, setValorPremios] = useState({ 25: 10, 50: 20, 75: 200, 100: 500 });
   const [tempoDelay, setTempoDelay] = useState(5);
   const [titulo, setTitulo] = useState("");
 
@@ -42,23 +41,19 @@ export default function SimuladorDelay() {
       }
 
       if (dataSorteio) {
-        setValorCartela(Number(dataSorteio.valorCartela) || 1);
+        setValorCartela(Number(dataSorteio.valorCartela) || 10);
         setTitulo(dataSorteio.titulo || "");
         setValorPremios({
-          25: Number(dataSorteio.premio25) || 1,
-          50: Number(dataSorteio.premio50) || 1,
-          75: Number(dataSorteio.premio75) || 1,
-          100: Number(dataSorteio.premio100) || 1,
+          25: Number(dataSorteio.premio25) || 10,
+          50: Number(dataSorteio.premio50) || 20,
+          75: Number(dataSorteio.premio75) || 200,
+          100: Number(dataSorteio.premio100) || 500,
         });
-      }
-
-      if (delayQuery) {
-        setTempoDelay(Number(delayQuery));
       }
     };
 
     carregarDados();
-  }, [codigo, delayQuery]);
+  }, [codigo]);
 
   const encerrarSorteio = async () => {
     const dados = {
@@ -74,64 +69,6 @@ export default function SimuladorDelay() {
       encerradoEm: new Date().toISOString(),
       valorCartela,
       premio25: valorPremios[25],
-      premio50: valorPremios[50],
-      premio75: valorPremios[75],
-      premio100: valorPremios[100]
-    };
-
-    const { error } = await supabase.from("historico").insert([dados]);
-    if (error) {
-      setMensagem("❌ Erro ao salvar no histórico!");
-    } else {
-      await supabase.from("bingo").delete().eq("codigoSorteio", codigo);
-      setMensagem("✅ Sorteio encerrado e movido para o histórico!");
-      setEncerrado(true);
-    }
-  };
-
-  return (
-    <div className="body" style={{ textAlign: "center" }}>
-      {cartelas.length > 0 && (
-        <>
-          <SimuladorBingo
-            cartelas={cartelas}
-            tempoDelay={tempoDelay}
-            valorCartela={valorCartela}
-            valorPremios={valorPremios}
-            titulo={titulo}
-            setPremios={setPremios}
-            setResumoFinanceiro={setResumoFinanceiro}
-            setBolasSelecionadas={setBolasSelecionadas}
-            setEtapasAlcancadas={setEtapasAlcancadas}
-            setBolasPremioDesbloqueadas={setBolasPremioDesbloqueadas}
-          />
-
-          {etapasAlcancadas.includes(100) && !encerrado && (
-            <button onClick={encerrarSorteio} style={{
-              marginTop: "30px",
-              border: "2px solid #00ff00",
-              backgroundColor: "transparent",
-              color: "#00ff00",
-              fontWeight: "bold",
-              padding: "10px 20px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}>
-              ENCERRAR SORTEIO
-            </button>
-          )}
-
-          {mensagem && (
-            <p style={{
-              marginTop: "20px",
-              fontWeight: "bold",
-              color: mensagem.includes("✅") ? "#00ff00" : "red"
-            }}>
-              {mensagem}
-            </p>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
+      premio50: valorPrem
+::contentReference[oaicite:0]{index=0}
+ 

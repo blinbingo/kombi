@@ -1,19 +1,32 @@
 
+let memoriaBolinhas = {}; // Objeto em memória por codigoSorteio
+
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método não permitido" });
+  if (req.method === "POST") {
+    const { codigo, numero } = req.body;
+
+    if (!codigo || typeof numero !== "number") {
+      return res.status(400).json({ error: "Dados inválidos" });
+    }
+
+    memoriaBolinhas[codigo] = numero;
+    console.log("📥 Bolinha recebida:", numero, "| Código:", codigo);
+    return res.status(200).json({ status: "ok" });
   }
 
-  const { codigo, numero } = req.body;
+  if (req.method === "GET") {
+    const codigo = req.query.codigo;
 
-  if (!codigo || typeof numero !== "number") {
-    return res.status(400).json({ error: "Dados inválidos" });
+    if (!codigo) {
+      return res.status(400).json({ error: "Código não fornecido" });
+    }
+
+    const numero = memoriaBolinhas[codigo] || null;
+    // Limpa após leitura para evitar repetição
+    if (numero) delete memoriaBolinhas[codigo];
+
+    return res.status(200).json({ numero });
   }
 
-  // Apenas loga por enquanto
-  console.log("🎯 Nova bolinha recebida:", numero, "| Sorteio:", codigo);
-
-  // Em breve: salvar ou emitir essa bolinha para a interface do sorteio
-
-  return res.status(200).json({ status: "ok", recebido: numero });
+  return res.status(405).json({ error: "Método não permitido" });
 }

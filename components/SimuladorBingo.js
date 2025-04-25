@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import PainelControle from "./PainelControle";
 import SimuladorBoard from "./SimuladorBoard";
@@ -23,50 +24,6 @@ export default function SimuladorBingo({
   const [mensagem, setMensagem] = useState("");
   const jaParouNo100 = useRef(false);
   const numeros = Array.from({ length: 60 }, (_, i) => i + 1);
-
-  const gerarCodigoSorteio = () => {
-    const agora = new Date();
-    const dia = String(agora.getDate()).padStart(2, '0');
-    const mes = String(agora.getMonth() + 1).padStart(2, '0');
-    const ano = agora.getFullYear();
-    const hora = String(agora.getHours()).padStart(2, '0');
-    const minuto = String(agora.getMinutes()).padStart(2, '0');
-    const segundo = String(agora.getSeconds()).padStart(2, '0');
-    return `BLIN-${dia}${mes}${ano}-${hora}${minuto}${segundo}`;
-  };
-
-  const salvarSorteio = async (premiadasReais) => {
-    const totalPremiosPagos = [25, 50, 75, 100].reduce(
-      (acc, meta) => acc + (premiadasReais[meta]?.length || 0) * valorPremios[meta],
-      0
-    );
-
-    const dados = {
-      quantidadeCartelas: cartelas.length,
-      valorCartela,
-      premio25: valorPremios[25],
-      premio50: valorPremios[50],
-      premio75: valorPremios[75],
-      premio100: valorPremios[100],
-      totalArrecadado: cartelas.length * valorCartela,
-      totalPremiosPagos,
-      codigoSorteio: gerarCodigoSorteio(),
-    };
-
-    try {
-      const { error } = await supabase.from("bingo").insert([dados]);
-      if (error) {
-        console.error("Erro ao salvar no Supabase:", error.message);
-        setMensagem("❌ Erro ao salvar sorteio.");
-      } else {
-        console.log("Sorteio salvo com sucesso!");
-        setMensagem("✅ Sorteio salvo com sucesso!");
-      }
-    } catch (err) {
-      console.error("Erro inesperado ao salvar sorteio:", err);
-      setMensagem("❌ Erro inesperado ao salvar sorteio.");
-    }
-  };
 
   const sortearBola = () => {
     if (jaParouNo100.current) return;
@@ -117,7 +74,6 @@ export default function SimuladorBingo({
       jaParouNo100.current = true;
       setSorteando(false);
       setContador(null);
-      salvarSorteio(novosPremios);
     }
   };
 
@@ -180,13 +136,13 @@ export default function SimuladorBingo({
     );
     setBolasSelecionadas(bolas);
     setPremios(premiadas);
-    setBolasPremioDesbloqueadas(desbloqueios);
+    setBolasPremioDesbloqueadas(dis
+bloqueios);
     setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     jaParouNo100.current = true;
     setSorteando(false);
     setContador(null);
     setPausado(false);
-    salvarSorteio(premiadas);
   };
 
   const reiniciarTudo = () => {

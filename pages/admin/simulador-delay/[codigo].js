@@ -13,6 +13,7 @@ export default function SimuladorDelay() {
   const [valorPremios, setValorPremios] = useState({ 25: 1, 50: 1, 75: 1, 100: 1 });
   const [tempoDelay, setTempoDelay] = useState(5);
   const [titulo, setTitulo] = useState("");
+
   const [resumoFinanceiro, setResumoFinanceiro] = useState(null);
   const [premios, setPremios] = useState({ 25: [], 50: [], 75: [], 100: [] });
   const [bolasSelecionadas, setBolasSelecionadas] = useState([]);

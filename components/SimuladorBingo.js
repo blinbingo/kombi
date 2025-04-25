@@ -136,8 +136,7 @@ export default function SimuladorBingo({
     );
     setBolasSelecionadas(bolas);
     setPremios(premiadas);
-    setBolasPremioDesbloqueadas(dis
-bloqueios);
+    setBolasPremioDesbloqueadas(disbloqueios);
     setResumoFinanceiro({ totalArrecadado, totalPremiosPagos });
     jaParouNo100.current = true;
     setSorteando(false);

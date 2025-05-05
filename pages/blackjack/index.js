@@ -88,6 +88,14 @@ export default function Blackjack() {
       </span>
     ));
 
+  const posicoes = [
+    { bottom: '40px', left: '5%', transform: 'rotate(-10deg)' },
+    { bottom: '90px', left: '22%', transform: 'rotate(-5deg)' },
+    { bottom: '110px', left: '50%', transform: 'translateX(-50%)' },
+    { bottom: '90px', right: '22%', transform: 'rotate(5deg)' },
+    { bottom: '40px', right: '5%', transform: 'rotate(10deg)' },
+  ];
+
   return (
     <div
       style={{
@@ -127,36 +135,24 @@ export default function Blackjack() {
           <div>{calcularValor(dealer)} pts</div>
         </div>
 
-        {/* Jogadores em linha curva */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '40px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            width: '90%',
-            gap: '12px',
-          }}
-        >
-          {jogadores.map((mao, index) => (
-            <div
-              key={index}
-              style={{
-                textAlign: 'center',
-                color: '#bbf7d0',
-                minWidth: '100px',
-              }}
-            >
-              <div>
-                <strong>Jogador {index + 1}</strong>
-              </div>
-              <div>{renderMao(mao)}</div>
-              <div>{calcularValor(mao)} pts</div>
+        {/* Jogadores em posições ao redor da mesa */}
+        {jogadores.map((mao, index) => (
+          <div
+            key={index}
+            style={{
+              position: 'absolute',
+              ...posicoes[index],
+              color: '#bbf7d0',
+              textAlign: 'center',
+            }}
+          >
+            <div>
+              <strong>Jogador {index + 1}</strong>
             </div>
-          ))}
-        </div>
+            <div>{renderMao(mao)}</div>
+            <div>{calcularValor(mao)} pts</div>
+          </div>
+        ))}
       </div>
     </div>
   );

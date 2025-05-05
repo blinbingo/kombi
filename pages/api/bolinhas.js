@@ -38,7 +38,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "GET") {
-    const codigo = req.query.codigo;
+   const codigo = req.query.codigo || req.query.codigoSorteio;
     console.log("🔍 Buscando bolinha para o código:", codigo);
 
     if (!codigo) {

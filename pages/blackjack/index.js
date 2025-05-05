@@ -75,12 +75,12 @@ export default function Blackjack() {
         style={{
           display: 'inline-block',
           margin: '4px',
-          padding: '8px 12px',
+          padding: '6px 10px',
           borderRadius: '6px',
           backgroundColor: '#fff',
           color: '#000',
           fontWeight: 'bold',
-          fontSize: '16px',
+          fontSize: '14px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
         }}
       >
@@ -91,52 +91,73 @@ export default function Blackjack() {
   return (
     <div
       style={{
-        backgroundColor: '#14532d',
+        position: 'relative',
+        backgroundColor: '#064e3b',
         minHeight: '100vh',
-        padding: '40px',
-        color: 'white',
-        fontFamily: 'Arial, sans-serif',
+        padding: '0',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-      <h1 style={{ textAlign: 'center', fontSize: '32px', marginBottom: '20px' }}>🃏 Mesa de Blackjack</h1>
-
       <div
         style={{
+          position: 'relative',
+          width: '800px',
+          height: '500px',
           backgroundColor: '#166534',
-          padding: '20px',
-          borderRadius: '12px',
-          maxWidth: '800px',
-          margin: '0 auto 40px auto',
-          boxShadow: '0 0 12px rgba(0,0,0,0.5)',
+          borderRadius: '50% / 40%',
+          boxShadow: '0 0 20px rgba(0,0,0,0.5)',
         }}
       >
-        <h2 style={{ textAlign: 'center', color: '#facc15' }}>Dealer: {calcularValor(dealer)} pontos</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>{renderMao(dealer)}</div>
-      </div>
+        {/* Dealer */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            textAlign: 'center',
+            color: '#facc15',
+          }}
+        >
+          <strong>Dealer</strong>
+          <div>{renderMao(dealer)}</div>
+          <div>{calcularValor(dealer)} pts</div>
+        </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '20px',
-          maxWidth: '900px',
-          margin: '0 auto',
-        }}
-      >
-        {jogadores.map((mao, index) => (
-          <div
-            key={index}
-            style={{
-              backgroundColor: '#15803d',
-              padding: '20px',
-              borderRadius: '12px',
-              boxShadow: '0 0 8px rgba(0,0,0,0.4)',
-            }}
-          >
-            <h3 style={{ color: '#bbf7d0' }}>Jogador {index + 1} - {calcularValor(mao)} pontos</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>{renderMao(mao)}</div>
-          </div>
-        ))}
+        {/* Jogadores posicionados */}
+        {jogadores.map((mao, index) => {
+          const posicoes = [
+            { bottom: '40px', left: '50%', transform: 'translateX(-50%)' }, // jogador 3 (centro)
+            { bottom: '80px', left: '15%' }, // jogador 2
+            { bottom: '80px', right: '15%' }, // jogador 4
+            { bottom: '20px', left: '5%' }, // jogador 1
+            { bottom: '20px', right: '5%' }, // jogador 5
+          ];
+          const pos = posicoes[index] || {};
+          return (
+            <div
+              key={index}
+              style={{
+                position: 'absolute',
+                ...pos,
+                backgroundColor: '#15803d',
+                padding: '10px',
+                borderRadius: '8px',
+                color: '#bbf7d0',
+                boxShadow: '0 0 6px rgba(0,0,0,0.4)',
+                textAlign: 'center',
+              }}
+            >
+              <div>
+                <strong>Jogador {index + 1}</strong>
+              </div>
+              <div>{renderMao(mao)}</div>
+              <div>{calcularValor(mao)} pts</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

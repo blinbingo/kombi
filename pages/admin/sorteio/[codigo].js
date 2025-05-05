@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../../../utils/supabaseClient";
@@ -33,6 +34,25 @@ export default function SorteioManual() {
     }
     if (codigo) carregarCartelas();
   }, [codigo]);
+
+  useEffect(() => {
+    if (!codigo) return;
+
+    const intervalo = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/bolinhas?codigo=${codigo}`);
+        const data = await res.json();
+
+        if (data.numero && !bolasSelecionadas.includes(data.numero)) {
+          sortearBola(data.numero);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar bolinha da API:", err);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalo);
+  }, [codigo, bolasSelecionadas]);
 
   const sortearBola = (num) => {
     if (bolasSelecionadas.includes(num) || encerrado) return;

@@ -89,11 +89,11 @@ export default function Blackjack() {
     ));
 
   const posicoes = [
-    { bottom: '40px', left: '15%', transform: 'translateX(-50%) rotate(-5deg)' },
-    { bottom: '70px', left: '32%', transform: 'translateX(-50%)' },
-    { bottom: '90px', left: '50%', transform: 'translateX(-50%)' },
-    { bottom: '70px', left: '68%', transform: 'translateX(-50%)' },
-    { bottom: '40px', left: '85%', transform: 'translateX(-50%) rotate(5deg)' },
+    { bottom: '40px', left: '15%', transform: 'translateX(-50%) rotate(5deg)' },
+    { bottom: '70px', left: '32%', transform: 'translateX(-50%) rotate(2deg)' },
+    { bottom: '90px', left: '50%', transform: 'translateX(-50%) rotate(0deg)' },
+    { bottom: '70px', left: '68%', transform: 'translateX(-50%) rotate(-2deg)' },
+    { bottom: '40px', left: '85%', transform: 'translateX(-50%) rotate(-5deg)' },
   ];
 
   return (
@@ -135,7 +135,7 @@ export default function Blackjack() {
           <div>{calcularValor(dealer)} pts</div>
         </div>
 
-        {/* Jogadores posicionados ao redor da mesa com alinhamento ajustado */}
+        {/* Jogadores com rotação corrigida */}
         {jogadores.map((mao, index) => (
           <div
             key={index}

@@ -40,7 +40,7 @@ export default function SorteioManual() {
 
     const intervalo = setInterval(async () => {
       try {
-        const res = await fetch(`/api/bolinhas?codigo=${codigo}`);
+        const res = await fetch(`/api/bolinhas?codigo=${codigo}`, { cache: 'no-store' });
         const data = await res.json();
 
         if (data.numero && !bolasSelecionadas.includes(data.numero)) {

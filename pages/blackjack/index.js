@@ -8,17 +8,16 @@ export default function Blackjack() {
   ];
 
   const posicoes = [
-    { bottom: '-5px', left: '10%', transform: 'translateX(-50%) rotate(12deg)' },
-    { bottom: '-10px', left: '22%', transform: 'translateX(-50%) rotate(6deg)' },
-    { bottom: '-40px', left: '35%', transform: 'translateX(-50%)' },
-    { bottom: '-10px', left: '48%', transform: 'translateX(-50%) rotate(-6deg)' },
-    { bottom: '-5px', left: '60%', transform: 'translateX(-50%) rotate(-12deg)' },
-
-    { top: '-5px', left: '60%', transform: 'translateX(-50%) rotate(12deg)' },
-    { top: '-10px', left: '48%', transform: 'translateX(-50%) rotate(6deg)' },
-    { top: '-40px', left: '35%', transform: 'translateX(-50%)' },
-    { top: '-10px', left: '22%', transform: 'translateX(-50%) rotate(-6deg)' },
-    { top: '-5px', left: '10%', transform: 'translateX(-50%) rotate(-12deg)' }
+    { bottom: '-5px', left: '20%', transform: 'translateX(-50%) rotate(10deg)' },     // Jogador 1
+    { bottom: '-20px', left: '40%', transform: 'translateX(-50%)' },                  // Jogador 2
+    { bottom: '-5px', left: '60%', transform: 'translateX(-50%) rotate(-10deg)' },    // Jogador 3
+    { bottom: '40%', right: '-55px', transform: 'translateY(50%) rotate(-90deg)' },   // Jogador 4
+    { top: '40%', right: '-55px', transform: 'translateY(-50%) rotate(-90deg)' },     // Jogador 5
+    { top: '-5px', left: '60%', transform: 'translateX(-50%) rotate(10deg)' },        // Jogador 6
+    { top: '-20px', left: '40%', transform: 'translateX(-50%)' },                     // Jogador 7
+    { top: '-5px', left: '20%', transform: 'translateX(-50%) rotate(-10deg)' },       // Jogador 8
+    { top: '40%', left: '-55px', transform: 'translateY(-50%) rotate(90deg)' },       // Jogador 9
+    { bottom: '40%', left: '-55px', transform: 'translateY(50%) rotate(90deg)' },     // Jogador 10
   ];
 
   return (
@@ -35,7 +34,7 @@ export default function Blackjack() {
       <div
         style={{
           position: 'relative',
-          width: '1100px',
+          width: '1000px',
           height: '600px',
           backgroundColor: '#166534',
           borderRadius: '50% / 40%',
@@ -68,6 +67,7 @@ export default function Blackjack() {
               fontWeight: 'bold',
               textAlign: 'center',
               fontSize: '14px',
+              width: '80px',
             }}
           >
             {nome}

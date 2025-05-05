@@ -108,6 +108,7 @@ export default function Blackjack() {
           backgroundColor: '#166534',
           borderRadius: '50% / 40%',
           boxShadow: '0 0 20px rgba(0,0,0,0.5)',
+          paddingTop: '60px',
         }}
       >
         {/* Dealer */}
@@ -126,28 +127,26 @@ export default function Blackjack() {
           <div>{calcularValor(dealer)} pts</div>
         </div>
 
-        {/* Jogadores posicionados */}
-        {jogadores.map((mao, index) => {
-          const posicoes = [
-            { bottom: '40px', left: '50%', transform: 'translateX(-50%)' }, // jogador 3 (centro)
-            { bottom: '80px', left: '15%' }, // jogador 2
-            { bottom: '80px', right: '15%' }, // jogador 4
-            { bottom: '20px', left: '5%' }, // jogador 1
-            { bottom: '20px', right: '5%' }, // jogador 5
-          ];
-          const pos = posicoes[index] || {};
-          return (
+        {/* Jogadores em linha curva */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '40px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '90%',
+            gap: '12px',
+          }}
+        >
+          {jogadores.map((mao, index) => (
             <div
               key={index}
               style={{
-                position: 'absolute',
-                ...pos,
-                backgroundColor: '#15803d',
-                padding: '10px',
-                borderRadius: '8px',
-                color: '#bbf7d0',
-                boxShadow: '0 0 6px rgba(0,0,0,0.4)',
                 textAlign: 'center',
+                color: '#bbf7d0',
+                minWidth: '100px',
               }}
             >
               <div>
@@ -156,8 +155,8 @@ export default function Blackjack() {
               <div>{renderMao(mao)}</div>
               <div>{calcularValor(mao)} pts</div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );

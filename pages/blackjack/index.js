@@ -40,7 +40,6 @@ export default function Blackjack() {
   const [baralho, setBaralho] = useState([]);
   const [jogadores, setJogadores] = useState([]);
   const [dealer, setDealer] = useState([]);
-  const [resultados, setResultados] = useState([]);
 
   useEffect(() => {
     iniciarJogo();
@@ -53,13 +52,11 @@ export default function Blackjack() {
       novaMaoJogadores.push([novoBaralho.pop(), novoBaralho.pop()]);
     }
     const novaMaoDealer = [novoBaralho.pop(), novoBaralho.pop()];
-    const novosResultados = [];
 
-    novaMaoJogadores.forEach((mao, index) => {
+    novaMaoJogadores.forEach((mao) => {
       while (calcularValor(mao) < 17) {
         mao.push(novoBaralho.pop());
       }
-      novosResultados.push({ jogador: index + 1, mao });
     });
 
     while (calcularValor(novaMaoDealer) < 17) {
@@ -69,28 +66,78 @@ export default function Blackjack() {
     setBaralho(novoBaralho);
     setJogadores(novaMaoJogadores);
     setDealer(novaMaoDealer);
-    setResultados(novosResultados);
   };
 
   const renderMao = (mao) =>
     mao.map((carta, i) => (
-      <span key={i}>
-        {carta.naipe} {carta.valor}{' '}
+      <span
+        key={i}
+        style={{
+          display: 'inline-block',
+          margin: '4px',
+          padding: '8px 12px',
+          borderRadius: '6px',
+          backgroundColor: '#fff',
+          color: '#000',
+          fontWeight: 'bold',
+          fontSize: '16px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+        }}
+      >
+        {carta.naipe} {carta.valor}
       </span>
     ));
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Blackjack - Mesa Automática</h1>
-      <h2>Dealer: {calcularValor(dealer)} pontos</h2>
-      <div>{renderMao(dealer)}</div>
-      <hr />
-      {jogadores.map((mao, index) => (
-        <div key={index} style={{ marginBottom: 10 }}>
-          <strong>Jogador {index + 1}:</strong> {calcularValor(mao)} pontos
-          <div>{renderMao(mao)}</div>
-        </div>
-      ))}
+    <div
+      style={{
+        backgroundColor: '#14532d',
+        minHeight: '100vh',
+        padding: '40px',
+        color: 'white',
+        fontFamily: 'Arial, sans-serif',
+      }}
+    >
+      <h1 style={{ textAlign: 'center', fontSize: '32px', marginBottom: '20px' }}>🃏 Mesa de Blackjack</h1>
+
+      <div
+        style={{
+          backgroundColor: '#166534',
+          padding: '20px',
+          borderRadius: '12px',
+          maxWidth: '800px',
+          margin: '0 auto 40px auto',
+          boxShadow: '0 0 12px rgba(0,0,0,0.5)',
+        }}
+      >
+        <h2 style={{ textAlign: 'center', color: '#facc15' }}>Dealer: {calcularValor(dealer)} pontos</h2>
+        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>{renderMao(dealer)}</div>
+      </div>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '20px',
+          maxWidth: '900px',
+          margin: '0 auto',
+        }}
+      >
+        {jogadores.map((mao, index) => (
+          <div
+            key={index}
+            style={{
+              backgroundColor: '#15803d',
+              padding: '20px',
+              borderRadius: '12px',
+              boxShadow: '0 0 8px rgba(0,0,0,0.4)',
+            }}
+          >
+            <h3 style={{ color: '#bbf7d0' }}>Jogador {index + 1} - {calcularValor(mao)} pontos</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>{renderMao(mao)}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

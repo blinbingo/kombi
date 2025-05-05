@@ -5,11 +5,11 @@ export default function Blackjack() {
   const jogadores = ['Jogador 1', 'Jogador 2', 'Jogador 3', 'Jogador 4', 'Jogador 5'];
 
   const posicoes = [
-    { bottom: '30px', left: '8%', transform: 'translateX(-50%)' },
-    { bottom: '150px', left: '0%', transform: 'translateX(0%) rotate(-90deg)' },
-    { bottom: '200px', left: '50%', transform: 'translateX(-50%)' },
-    { bottom: '150px', right: '0%', transform: 'translateX(0%) rotate(90deg)' },
-    { bottom: '30px', left: '92%', transform: 'translateX(-50%)' },
+    { bottom: '-40px', left: '15%', transform: 'translateX(-50%)' },
+    { top: '50%', left: '-60px', transform: 'translateY(-50%) rotate(-90deg)' },
+    { bottom: '-40px', left: '50%', transform: 'translateX(-50%)' },
+    { top: '50%', right: '-60px', transform: 'translateY(-50%) rotate(90deg)' },
+    { bottom: '-40px', left: '85%', transform: 'translateX(-50%)' },
   ];
 
   return (

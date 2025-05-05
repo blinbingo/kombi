@@ -40,13 +40,11 @@ export default function SorteioManual() {
 
     const intervalo = setInterval(async () => {
       try {
-        const res = await fetch(`/api/bolinhas?codigo=${codigo}`, { cache: 'no-store' });
+        const res = await fetch(`/api/bolinhas?codigo=${codigo}`);
         const data = await res.json();
 
-        console.log("🔍 API respondeu:", data);
-      if (data.numero && !bolasSelecionadas.includes(data.numero)) {
-        console.log("🎯 Bolinha enviada para sortearBola:", data.numero);
-        sortearBola(data.numero);
+        if (data.numero && !bolasSelecionadas.includes(data.numero)) {
+          sortearBola(data.numero);
         }
       } catch (err) {
         console.error("Erro ao buscar bolinha da API:", err);

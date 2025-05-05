@@ -89,11 +89,11 @@ export default function Blackjack() {
     ));
 
   const posicoes = [
-    { bottom: '40px', left: '15%', transform: 'translateX(-50%) rotate(5deg)' },
-    { bottom: '70px', left: '32%', transform: 'translateX(-50%) rotate(2deg)' },
-    { bottom: '90px', left: '50%', transform: 'translateX(-50%) rotate(0deg)' },
-    { bottom: '70px', left: '68%', transform: 'translateX(-50%) rotate(-2deg)' },
-    { bottom: '40px', left: '85%', transform: 'translateX(-50%) rotate(-5deg)' },
+    { bottom: '30px', left: '8%', transform: 'translateX(-50%) rotate(15deg)' },
+    { bottom: '70px', left: '26%', transform: 'translateX(-50%) rotate(7deg)' },
+    { bottom: '100px', left: '50%', transform: 'translateX(-50%) rotate(0deg)' },
+    { bottom: '70px', left: '74%', transform: 'translateX(-50%) rotate(-7deg)' },
+    { bottom: '30px', left: '92%', transform: 'translateX(-50%) rotate(-15deg)' },
   ];
 
   return (
@@ -111,8 +111,8 @@ export default function Blackjack() {
       <div
         style={{
           position: 'relative',
-          width: '800px',
-          height: '500px',
+          width: '900px',
+          height: '550px',
           backgroundColor: '#166534',
           borderRadius: '50% / 40%',
           boxShadow: '0 0 20px rgba(0,0,0,0.5)',
@@ -135,7 +135,7 @@ export default function Blackjack() {
           <div>{calcularValor(dealer)} pts</div>
         </div>
 
-        {/* Jogadores com rotação corrigida */}
+        {/* Jogadores com espaçamento maior e rotação curva mais realista */}
         {jogadores.map((mao, index) => (
           <div
             key={index}

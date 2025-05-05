@@ -8,14 +8,14 @@ export default function Blackjack() {
   ];
 
   const posicoes = [
-    { bottom: '-5px', left: '20%', transform: 'translateX(-50%) rotate(10deg)' },    // Jogador 1
-    { top: '50%', left: '-60px', transform: 'translateY(-50%) rotate(90deg)' },      // Jogador 2
-    { bottom: '-40px', left: '50%', transform: 'translateX(-50%)' },                 // Jogador 3
-    { top: '50%', right: '-60px', transform: 'translateY(-50%) rotate(-90deg)' },    // Jogador 4
-    { bottom: '-5px', left: '80%', transform: 'translateX(-50%) rotate(-10deg)' },   // Jogador 5
+    { bottom: '-5px', left: '20%', transform: 'translateX(-50%) rotate(10deg)' },     // Jogador 1
+    { top: '50%', left: '-60px', transform: 'translateY(-50%) rotate(90deg)' },       // Jogador 2
+    { bottom: '-40px', left: '50%', transform: 'translateX(-50%)' },                  // Jogador 3
+    { top: '50%', right: '-60px', transform: 'translateY(-50%) rotate(-90deg)' },     // Jogador 4
+    { bottom: '-5px', left: '80%', transform: 'translateX(-50%) rotate(-10deg)' },    // Jogador 5
 
-    { bottom: '20px', left: '7%', transform: 'translateX(-50%) rotate(45deg)' },     // Jogador 6 (entre 2 e 1)
-    { bottom: '20px', left: '93%', transform: 'translateX(-50%) rotate(-45deg)' },   // Jogador 7 (entre 5 e 4)
+    { bottom: '0px', left: '12%', transform: 'translateX(-50%) rotate(20deg)' },      // Jogador 6 (ajustado)
+    { bottom: '0px', left: '88%', transform: 'translateX(-50%) rotate(-20deg)' },     // Jogador 7 (ajustado)
   ];
 
   return (

@@ -58,19 +58,20 @@ export default function BlackjackPage() {
       <JogadorMesa top="75%" left="85%" rotate={0} nome="Jogador 8" />
 
       {/* Componente lógico do jogo */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 10,
-          pointerEvents: "none", // deixa a mesa intacta visualmente
-        }}
-      >
-        <MesaJogo />
-      </div>
+     <div
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    zIndex: 10,
+    pointerEvents: "auto", // ← agora os botões funcionam!
+  }}
+>
+  <MesaJogo />
+</div>
+
     </div>
   );
 }

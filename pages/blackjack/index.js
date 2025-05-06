@@ -37,15 +37,15 @@ export default function MesaBlackjack() {
         Dealer ♠ A ♣ 9
       </div>
 
-      {/* Jogadores com texto ajustado abaixo dos círculos */}
-      <JogadorMesa top={390} left={270} rotate={60} nome="Jogador 1" />
-      <JogadorMesa top={420} left={435} rotate={40} nome="Jogador 2" />
-      <JogadorMesa top={450} left={610} rotate={20} nome="Jogador 3" />
-      <JogadorMesa top={460} left={800} rotate={0} nome="Jogador 4" />
-      <JogadorMesa top={450} left={990} rotate={-20} nome="Jogador 5" />
-      <JogadorMesa top={420} left={1170} rotate={-40} nome="Jogador 6" />
-      <JogadorMesa top={390} left={1340} rotate={-60} nome="Jogador 7" />
-      <JogadorMesa top={350} left={1470} rotate={-80} nome="Jogador 8" />
+      {/* Jogadores posicionados com mais precisão abaixo dos círculos */}
+      <JogadorMesa top={420} left={260} rotate={60} nome="Jogador 1" />
+      <JogadorMesa top={460} left={430} rotate={35} nome="Jogador 2" />
+      <JogadorMesa top={490} left={610} rotate={15} nome="Jogador 3" />
+      <JogadorMesa top={505} left={800} rotate={0} nome="Jogador 4" />
+      <JogadorMesa top={490} left={990} rotate={-15} nome="Jogador 5" />
+      <JogadorMesa top={460} left={1170} rotate={-35} nome="Jogador 6" />
+      <JogadorMesa top={420} left={1340} rotate={-60} nome="Jogador 7" />
+      <JogadorMesa top={370} left={1465} rotate={-75} nome="Jogador 8" />
     </div>
   );
 }

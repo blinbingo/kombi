@@ -8,16 +8,16 @@ export default function Blackjack() {
     "Jogador 5", "Jogador 6", "Jogador 7", "Jogador 8"
   ];
 
-  // Coordenadas ajustadas manualmente para encaixar nos círculos da imagem
+  // Coordenadas refinadas manualmente para centralizar em cada círculo da imagem
   const posicoes = [
-    { top: "64%", left: "15%" },
-    { top: "72%", left: "26%" },
-    { top: "77%", left: "38.5%" },
-    { top: "79%", left: "51%" },
-    { top: "77%", left: "63.5%" },
-    { top: "72%", left: "75%" },
-    { top: "64%", left: "86%" },
-    { top: "53%", left: "92.5%" },
+    { top: "64%", left: "12.5%" },
+    { top: "72%", left: "24.5%" },
+    { top: "76%", left: "37%" },
+    { top: "78%", left: "50%" },
+    { top: "76%", left: "63%" },
+    { top: "72%", left: "75.5%" },
+    { top: "64%", left: "87%" },
+    { top: "54%", left: "93.5%" },
   ];
 
   return (

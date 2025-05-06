@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import JogadorMesa from "./JogadorMesa";
 
 export default function MesaBlackjack() {
   return (
@@ -36,43 +37,8 @@ export default function MesaBlackjack() {
         Dealer ♠ A ♣ 9
       </div>
 
-      {/* Jogador 1 - nova posição e rotação refinada */}
-      <div
-        style={{
-          position: "absolute",
-          top: 180,
-          left: 120,
-          transform: "rotate(130deg)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "white",
-            padding: "4px 8px",
-            borderRadius: 8,
-            fontWeight: "bold",
-            marginBottom: 4,
-            transform: "rotate(-130deg)",
-          }}
-        >
-          ♥ Q ♠ 7
-        </div>
-        <div
-          style={{
-            backgroundColor: "white",
-            padding: "4px 8px",
-            borderRadius: 8,
-            fontWeight: "bold",
-            color: "#0f0f0f",
-            transform: "rotate(-130deg)",
-          }}
-        >
-          Jogador 1
-        </div>
-      </div>
+      {/* Jogador 1 usando componente profissional */}
+      <JogadorMesa top={182} left={140} rotate={130} nome="Jogador 1" />
     </div>
   );
 }

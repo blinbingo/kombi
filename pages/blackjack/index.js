@@ -36,13 +36,13 @@ export default function MesaBlackjack() {
         Dealer ♠ A ♣ 9
       </div>
 
-      {/* Jogador 1 - com rotação personalizada e layout cartesiano */}
+      {/* Jogador 1 - nova posição e rotação refinada */}
       <div
         style={{
           position: "absolute",
-          top: 300,
-          left: 250,
-          transform: "rotate(150deg)",
+          top: 180,
+          left: 120,
+          transform: "rotate(130deg)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -55,7 +55,7 @@ export default function MesaBlackjack() {
             borderRadius: 8,
             fontWeight: "bold",
             marginBottom: 4,
-            transform: "rotate(-150deg)",
+            transform: "rotate(-130deg)",
           }}
         >
           ♥ Q ♠ 7
@@ -67,7 +67,7 @@ export default function MesaBlackjack() {
             borderRadius: 8,
             fontWeight: "bold",
             color: "#0f0f0f",
-            transform: "rotate(-150deg)",
+            transform: "rotate(-130deg)",
           }}
         >
           Jogador 1

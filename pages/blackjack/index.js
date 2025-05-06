@@ -17,13 +17,13 @@ export default function BlackjackPage() {
       parou: false,
     }))
   );
-  const [jogadorAtual, setJogadorAtual] = useState(0);
+  const [jogadorAtual, setJogadorAtual] = useState(null);
   const [dealer, setDealer] = useState({ cartas: [] });
   const [jogoIniciado, setJogoIniciado] = useState(false);
   const [jogoFinalizado, setJogoFinalizado] = useState(false);
   const deck = new (require("@/components/blackjack/DeckManager").default)();
 
-  const posicoes = [
+ const posicoes = [
     { top: "75%", left: "15%", rotate: 0 },
     { top: "75%", left: "25%", rotate: 0 },
     { top: "75%", left: "35%", rotate: 0 },
@@ -33,6 +33,39 @@ export default function BlackjackPage() {
     { top: "75%", left: "75%", rotate: 0 },
     { top: "75%", left: "85%", rotate: 0 },
   ];
+
+  const iniciarJogo = () => {
+    setJogoIniciado(true);
+    distribuirCartasIniciais();
+  };
+
+  const distribuirCartasIniciais = async () => {
+    const novos = [...dadosJogadores];
+
+    // Primeira rodada (do 8 ao 1)
+    for (let i = 7; i >= 0; i--) {
+      await new Promise((res) => setTimeout(res, 200));
+      novos[i].cartas.push(deck.sortearCarta());
+      setDadosJogadores([...novos]);
+    }
+
+    // Dealer 1 carta
+    await new Promise((res) => setTimeout(res, 200));
+    setDealer({ cartas: [deck.sortearCarta()] });
+
+    // Segunda rodada (do 8 ao 1)
+    for (let i = 7; i >= 0; i--) {
+      await new Promise((res) => setTimeout(res, 200));
+      novos[i].cartas.push(deck.sortearCarta());
+      setDadosJogadores([...novos]);
+    }
+
+    // Dealer 2 carta (virada logicamente)
+    await new Promise((res) => setTimeout(res, 200));
+    setDealer((d) => ({ cartas: [...d.cartas, deck.sortearCarta()] }));
+
+    setJogadorAtual(7); // começa pelo jogador 8
+  };
 
   const sortearCarta = () => {
     const novaCarta = deck.sortearCarta();
@@ -59,9 +92,9 @@ export default function BlackjackPage() {
   };
 
   const passar = () => {
-    let i = jogadorAtual + 1;
-    while (i < 8 && (dadosJogadores[i].parou || dadosJogadores[i].estourado)) i++;
-    if (i >= 8) {
+    let i = jogadorAtual - 1;
+    while (i >= 0 && (dadosJogadores[i].parou || dadosJogadores[i].estourado)) i--;
+    if (i < 0) {
       setJogoFinalizado(true);
       jogarDealer();
     } else {
@@ -142,6 +175,7 @@ export default function BlackjackPage() {
             onSortear={sortearCarta}
             onParar={parar}
             onDobrar={dobrar}
+            onSplit={() => {}}
           />
         ))
       ) : (
@@ -155,7 +189,7 @@ export default function BlackjackPage() {
           }}
         >
           <button
-            onClick={() => setJogoIniciado(true)}
+            onClick={iniciarJogo}
             style={{ padding: 12, fontSize: 18 }}
           >
             Iniciar Rodada

@@ -6,6 +6,7 @@ export default function JogadorMesa({ top, left, rotate, nome }) {
         position: 'absolute',
         top,
         left,
+        transform: 'translate(-50%, -50%)', // centraliza corretamente
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -13,12 +14,12 @@ export default function JogadorMesa({ top, left, rotate, nome }) {
     >
       <div
         style={{
+          transform: `rotate(${rotate}deg)`,
           backgroundColor: 'white',
-          color: 'black', // cor visível sobre fundo branco
+          color: 'black',
           padding: '4px 8px',
           borderRadius: 8,
           fontWeight: 'bold',
-          transform: `rotate(${rotate}deg)`,
         }}
       >
         {nome}

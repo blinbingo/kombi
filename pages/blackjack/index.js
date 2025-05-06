@@ -3,38 +3,32 @@ import React from 'react';
 
 export default function Blackjack() {
   return (
-    <div
-      style={
+    <div style={
+      position: 'relative',
+      backgroundColor: '#064e3b',
+      minHeight: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }>
+      <div style={
         position: 'relative',
-        backgroundColor: '#064e3b',
-        minHeight: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }
-    >
-      <div
-        style={
-          position: 'relative',
-          width: '1000px',
-          height: '600px',
-          backgroundColor: '#166534',
-          borderRadius: '50% / 40%',
-          boxShadow: '0 0 20px rgba(0,0,0,0.5)',
-        }
-      >
-        <div
-          style={
-            position: 'absolute',
-            top: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            textAlign: 'center',
-            color: '#facc15',
-            fontWeight: 'bold',
-            fontSize: '18px',
-          }
-        >
+        width: '1000px',
+        height: '600px',
+        backgroundColor: '#166534',
+        borderRadius: '50% / 40%',
+        boxShadow: '0 0 20px rgba(0,0,0,0.5)'
+      }>
+        <div style={
+          position: 'absolute',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          textAlign: 'center',
+          color: '#facc15',
+          fontWeight: 'bold',
+          fontSize: '18px'
+        }>
           Dealer
           <div style={ marginTop: '10px' }>
             <div style={
@@ -62,11 +56,14 @@ export default function Blackjack() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontSize: '14px',
-            width: '80px',
+            width: '80px'
           }
         >
           Jogador 1
-          <div style={ marginTop: '10px', transform: 'rotate(-225.0deg)' }>
+          <div style={
+            marginTop: '10px',
+            transform: 'rotate(-225.0deg)'
+          }>
             <div style={
               display: 'inline-block',
               padding: '4px 8px',
@@ -91,11 +88,14 @@ export default function Blackjack() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontSize: '14px',
-            width: '80px',
+            width: '80px'
           }
         >
           Jogador 2
-          <div style={ marginTop: '10px', transform: 'rotate(-210.0deg)' }>
+          <div style={
+            marginTop: '10px',
+            transform: 'rotate(-210.0deg)'
+          }>
             <div style={
               display: 'inline-block',
               padding: '4px 8px',
@@ -120,11 +120,14 @@ export default function Blackjack() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontSize: '14px',
-            width: '80px',
+            width: '80px'
           }
         >
           Jogador 3
-          <div style={ marginTop: '10px', transform: 'rotate(-195.0deg)' }>
+          <div style={
+            marginTop: '10px',
+            transform: 'rotate(-195.0deg)'
+          }>
             <div style={
               display: 'inline-block',
               padding: '4px 8px',
@@ -149,11 +152,14 @@ export default function Blackjack() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontSize: '14px',
-            width: '80px',
+            width: '80px'
           }
         >
           Jogador 4
-          <div style={ marginTop: '10px', transform: 'rotate(-180.0deg)' }>
+          <div style={
+            marginTop: '10px',
+            transform: 'rotate(-180.0deg)'
+          }>
             <div style={
               display: 'inline-block',
               padding: '4px 8px',
@@ -178,11 +184,14 @@ export default function Blackjack() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontSize: '14px',
-            width: '80px',
+            width: '80px'
           }
         >
           Jogador 5
-          <div style={ marginTop: '10px', transform: 'rotate(-165.0deg)' }>
+          <div style={
+            marginTop: '10px',
+            transform: 'rotate(-165.0deg)'
+          }>
             <div style={
               display: 'inline-block',
               padding: '4px 8px',
@@ -207,11 +216,14 @@ export default function Blackjack() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontSize: '14px',
-            width: '80px',
+            width: '80px'
           }
         >
           Jogador 6
-          <div style={ marginTop: '10px', transform: 'rotate(-150.0deg)' }>
+          <div style={
+            marginTop: '10px',
+            transform: 'rotate(-150.0deg)'
+          }>
             <div style={
               display: 'inline-block',
               padding: '4px 8px',
@@ -236,11 +248,14 @@ export default function Blackjack() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontSize: '14px',
-            width: '80px',
+            width: '80px'
           }
         >
           Jogador 7
-          <div style={ marginTop: '10px', transform: 'rotate(-135.0deg)' }>
+          <div style={
+            marginTop: '10px',
+            transform: 'rotate(-135.0deg)'
+          }>
             <div style={
               display: 'inline-block',
               padding: '4px 8px',

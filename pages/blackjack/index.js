@@ -36,20 +36,42 @@ export default function MesaBlackjack() {
         Dealer ♠ A ♣ 9
       </div>
 
-      {/* Jogador 1 */}
+      {/* Jogador 1 - com nome abaixo e cartas acima */}
       <div
         style={{
           position: "absolute",
           top: 300,
           left: 250,
-          backgroundColor: "white",
-          padding: "4px 8px",
-          borderRadius: 8,
-          fontWeight: "bold",
-          color: "#0f0f0f",
+          transform: "rotate(180deg)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        Jogador 1 ♥ Q ♠ 7
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: "4px 8px",
+            borderRadius: 8,
+            fontWeight: "bold",
+            marginBottom: 4,
+            transform: "rotate(180deg)",
+          }}
+        >
+          ♥ Q ♠ 7
+        </div>
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: "4px 8px",
+            borderRadius: 8,
+            fontWeight: "bold",
+            color: "#0f0f0f",
+            transform: "rotate(180deg)",
+          }}
+        >
+          Jogador 1
+        </div>
       </div>
     </div>
   );

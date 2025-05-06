@@ -40,7 +40,7 @@ export default function MesaBlackjack() {
       {/* Jogadores reposicionados abaixo dos círculos, evitando o amarelo */}
       <JogadorMesa top={470} left={260} rotate={60} nome="Jogador 1" />
       <JogadorMesa top={500} left={440} rotate={35} nome="Jogador 2" />
-      <JogadorMesa top={550} left={600} rotate={0} nome="Jogador 3" />
+      <JogadorMesa top={550} left={575} rotate={0} nome="Jogador 3" />
       <JogadorMesa top={550} left={800} rotate={0} nome="Jogador 4" />
       <JogadorMesa top={550} left={980} rotate={0} nome="Jogador 5" />
       <JogadorMesa top={550} left={1160} rotate={0} nome="Jogador 6" />

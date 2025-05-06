@@ -38,7 +38,7 @@ export default function MesaBlackjack() {
       </div>
 
       {/* Jogador 1 - alinhado mais à esquerda e para baixo */}
-      <JogadorMesa top={370} left={275} rotate={45} nome="Jogador 1" />
+      <JogadorMesa top={400} left={175} rotate={45} nome="Jogador 1" />
     </div>
   );
 }

@@ -37,8 +37,8 @@ export default function MesaBlackjack() {
         Dealer ♠ A ♣ 9
       </div>
 
-      {/* Jogador 1 ajustado com mais precisão */}
-      <JogadorMesa top={370} left={290} rotate={45} nome="Jogador 1" />
+      {/* Jogador 1 - alinhado mais à esquerda e para baixo */}
+      <JogadorMesa top={370} left={275} rotate={45} nome="Jogador 1" />
     </div>
   );
 }

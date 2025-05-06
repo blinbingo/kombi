@@ -1,8 +1,14 @@
-import React from "react";
+// pages/blackjack/index.js
 import Image from "next/image";
-import JogadorMesa from "../../components/JogadorMesa";
+import dynamic from "next/dynamic";
+import JogadorMesa from "@/components/blackjack/JogadorMesa";
 
-export default function MesaBlackjack() {
+// Carrega a lógica do jogo apenas no navegador
+const MesaJogo = dynamic(() => import("@/components/blackjack/MesaJogo"), {
+  ssr: false,
+});
+
+export default function BlackjackPage() {
   return (
     <div
       style={{
@@ -12,6 +18,7 @@ export default function MesaBlackjack() {
         overflow: "hidden",
       }}
     >
+      {/* Fundo da mesa */}
       <Image
         src="/blackjack/mesa.png"
         alt="Mesa de Blackjack"
@@ -35,18 +42,21 @@ export default function MesaBlackjack() {
           color: "#f0ad00",
         }}
       >
-        Dealer ♠ A ♣ 9
+        Dealer ♠ ?
       </div>
 
-      {/* Jogadores com posicionamento responsivo por porcentagem */}
-      <JogadorMesa top="75%" left="15%" rotate={0} nome="Jogador 1" />
-      <JogadorMesa top="75%" left="25%" rotate={0} nome="Jogador 2" />
-      <JogadorMesa top="75%" left="35%" rotate={0} nome="Jogador 3" />
-      <JogadorMesa top="75%" left="45%" rotate={0} nome="Jogador 4" />
-      <JogadorMesa top="75%" left="55%" rotate={0} nome="Jogador 5" />
-      <JogadorMesa top="75%" left="65%" rotate={0} nome="Jogador 6" />
-      <JogadorMesa top="75%" left="75%" rotate={0} nome="Jogador 7" />
-      <JogadorMesa top="75%" left="85%" rotate={0} nome="Jogador 8" />
+      {/* Jogadores posicionados responsivamente */}
+      <JogadorMesa top="75%" left="14%" rotate={0} nome="Jogador 1" />
+      <JogadorMesa top="75%" left="29%" rotate={0} nome="Jogador 2" />
+      <JogadorMesa top="75%" left="44%" rotate={0} nome="Jogador 3" />
+      <JogadorMesa top="75%" left="59%" rotate={0} nome="Jogador 4" />
+      <JogadorMesa top="75%" left="74%" rotate={0} nome="Jogador 5" />
+      <JogadorMesa top="75%" left="89%" rotate={0} nome="Jogador 6" />
+      <JogadorMesa top="75%" left="97%" rotate={0} nome="Jogador 7" />
+      <JogadorMesa top="75%" left="99%" rotate={0} nome="Jogador 8" />
+
+      {/* Componente principal do jogo */}
+      <MesaJogo />
     </div>
   );
 }

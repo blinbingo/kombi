@@ -24,14 +24,14 @@ export default function BlackjackPage() {
   const deck = new (require("@/components/blackjack/DeckManager").default)();
 
   const posicoes = [
-    { top: "62%", left: "14%", rotate: 60 },
-    { top: "68%", left: "29%", rotate: 35 },
-    { top: "73%", left: "44%", rotate: 15 },
-    { top: "75%", left: "59%", rotate: 0 },
-    { top: "73%", left: "74%", rotate: -15 },
-    { top: "68%", left: "89%", rotate: -35 },
-    { top: "62%", left: "97%", rotate: -60 },
-    { top: "55%", left: "99%", rotate: -80 },
+    { top: "75%", left: "15%", rotate: 0 },
+    { top: "75%", left: "25%", rotate: 0 },
+    { top: "75%", left: "35%", rotate: 0 },
+    { top: "75%", left: "45%", rotate: 0 },
+    { top: "75%", left: "55%", rotate: 0 },
+    { top: "75%", left: "65%", rotate: 0 },
+    { top: "75%", left: "75%", rotate: 0 },
+    { top: "75%", left: "85%", rotate: 0 },
   ];
 
   const sortearCarta = () => {

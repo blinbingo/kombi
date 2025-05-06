@@ -48,7 +48,7 @@ export default function BlackjackPage() {
       </div>
 
       {/* Jogadores posicionados */}
-      <JogadorMesa top="75%" left="15%" rotate={60} nome="Jogador 1" />
+      <JogadorMesa top="75%" left="15%" rotate={0} nome="Jogador 1" />
       <JogadorMesa top="75%" left="25%" rotate={0} nome="Jogador 2" />
       <JogadorMesa top="75%" left="35%" rotate={0} nome="Jogador 3" />
       <JogadorMesa top="75%" left="45%" rotate={0} nome="Jogador 4" />

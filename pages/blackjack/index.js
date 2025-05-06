@@ -25,8 +25,9 @@ export default function MesaBlackjack() {
       <div
         style={{
           position: "absolute",
-          top: 100,
-          left: 950,
+          top: "10%",
+          left: "50%",
+          transform: "translateX(-50%)",
           backgroundColor: "white",
           padding: "4px 8px",
           borderRadius: 8,
@@ -37,15 +38,15 @@ export default function MesaBlackjack() {
         Dealer ♠ A ♣ 9
       </div>
 
-      {/* Jogadores reposicionados abaixo dos círculos, evitando o amarelo */}
-      <JogadorMesa top={300} left={250} rotate={60} nome="Jogador 1" />
-      <JogadorMesa top={485} left={420} rotate={35} nome="Jogador 2" />
-      <JogadorMesa top={550} left={575} rotate={15} nome="Jogador 3" />
-      <JogadorMesa top={575} left={800} rotate={0} nome="Jogador 4" />
-      <JogadorMesa top={575} left={1025} rotate={0} nome="Jogador 5" />
-      <JogadorMesa top={550} left={1250} rotate={-15} nome="Jogador 6" />
-      <JogadorMesa top={450} left={1340} rotate={-60} nome="Jogador 7" />
-      <JogadorMesa top={430} left={1470} rotate={-80} nome="Jogador 8" />
+      {/* Jogadores com posicionamento responsivo por porcentagem */}
+      <JogadorMesa top="62%" left="14%" rotate={60} nome="Jogador 1" />
+      <JogadorMesa top="68%" left="29%" rotate={35} nome="Jogador 2" />
+      <JogadorMesa top="73%" left="44%" rotate={15} nome="Jogador 3" />
+      <JogadorMesa top="75%" left="59%" rotate={0} nome="Jogador 4" />
+      <JogadorMesa top="73%" left="74%" rotate={-15} nome="Jogador 5" />
+      <JogadorMesa top="68%" left="89%" rotate={-35} nome="Jogador 6" />
+      <JogadorMesa top="62%" left="97%" rotate={-60} nome="Jogador 7" />
+      <JogadorMesa top="55%" left="99%" rotate={-80} nome="Jogador 8" />
     </div>
   );
 }

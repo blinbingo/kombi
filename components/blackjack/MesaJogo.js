@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DeckManager from "@/components/blackjack/DeckManager";
+import ControleJogador from "@/components/blackjack/ControleJogador";
 
 const deck = new DeckManager();
 
@@ -39,6 +40,25 @@ export default function MesaJogo() {
     if (atualAtualizado.parou) {
       passarParaProximo();
     }
+  };
+
+  const pararJogador = () => {
+    const atual = jogadores[jogadorAtual];
+    const atualAtualizado = { ...actual, parou: true };
+    const novosJogadores = [...jogadores];
+    novosJogadores[jogadorAtual] = atualAtualizado;
+    setJogadores(novosJogadores);
+    passarParaProximo();
+  };
+
+  const dobrarJogador = () => {
+    sortearCarta();
+    const atual = jogadores[jogadorAtual];
+    const atualAtualizado = { ...atual, parou: true };
+    const novosJogadores = [...jogadores];
+    novosJogadores[jogadorAtual] = atualAtualizado;
+    setJogadores(novosJogadores);
+    passarParaProximo();
   };
 
   const passarParaProximo = () => {
@@ -99,14 +119,16 @@ export default function MesaJogo() {
           <div>
             Pontuação: {calcularPontuacao(j.cartas)} {j.estourado && "(Estourou!)"}
           </div>
+          {jogadorAtual === index && !jogoFinalizado && (
+            <ControleJogador
+              podeJogar={!j.parou && !j.estourado}
+              onSortear={sortearCarta}
+              onParar={pararJogador}
+              onDobrar={dobrarJogador}
+            />
+          )}
         </div>
       ))}
-
-      {!jogoFinalizado && (
-        <button onClick={sortearCarta} style={{ marginTop: 20, padding: 10 }}>
-          Sortear
-        </button>
-      )}
     </div>
   );
 }

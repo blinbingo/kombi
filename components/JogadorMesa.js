@@ -1,4 +1,3 @@
-// components/JogadorMesa.js
 export default function JogadorMesa({ top, left, rotate, nome }) {
   return (
     <div
@@ -6,7 +5,6 @@ export default function JogadorMesa({ top, left, rotate, nome }) {
         position: 'absolute',
         top,
         left,
-        transform: `rotate(${rotate}deg)`,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -14,11 +12,11 @@ export default function JogadorMesa({ top, left, rotate, nome }) {
     >
       <div
         style={{
-          transform: `rotate(${-rotate}deg)`,
           backgroundColor: 'white',
           padding: '4px 8px',
           borderRadius: 8,
           fontWeight: 'bold',
+          transform: `rotate(${rotate}deg)`, // Agora a rotação vai funcionar
         }}
       >
         {nome}

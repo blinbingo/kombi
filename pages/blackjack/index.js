@@ -8,16 +8,16 @@ export default function Blackjack() {
     "Jogador 5", "Jogador 6", "Jogador 7", "Jogador 8"
   ];
 
-  // Coordenadas absolutas aproximadas baseadas na imagem enviada
+  // Coordenadas ajustadas manualmente para encaixar nos círculos da imagem
   const posicoes = [
-    { top: "58%", left: "17%" },
-    { top: "66%", left: "29%" },
-    { top: "72%", left: "42%" },
-    { top: "74%", left: "56%" },
-    { top: "72%", left: "69%" },
-    { top: "66%", left: "79%" },
-    { top: "58%", left: "89%" },
-    { top: "48%", left: "95%" },
+    { top: "64%", left: "15%" },
+    { top: "72%", left: "26%" },
+    { top: "77%", left: "38.5%" },
+    { top: "79%", left: "51%" },
+    { top: "77%", left: "63.5%" },
+    { top: "72%", left: "75%" },
+    { top: "64%", left: "86%" },
+    { top: "53%", left: "92.5%" },
   ];
 
   return (
@@ -33,8 +33,10 @@ export default function Blackjack() {
       <Image
         src="/blackjack/mesa.png"
         alt="Mesa de Blackjack"
-        layout="fill"
-        objectFit="contain"
+        fill
+        style={{
+          objectFit: "cover"
+        }}
         priority
       />
 
@@ -42,7 +44,7 @@ export default function Blackjack() {
       <div
         style={{
           position: "absolute",
-          top: "14%",
+          top: "10%",
           left: "50%",
           transform: "translateX(-50%)",
           color: "#facc15",

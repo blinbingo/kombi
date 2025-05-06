@@ -8,16 +8,15 @@ export default function Blackjack() {
     "Jogador 5", "Jogador 6", "Jogador 7", "Jogador 8"
   ];
 
-  // Coordenadas refinadas manualmente para centralizar em cada círculo da imagem
   const posicoes = [
-    { top: "64%", left: "12.5%" },
-    { top: "72%", left: "24.5%" },
-    { top: "76%", left: "37%" },
-    { top: "78%", left: "50%" },
-    { top: "76%", left: "63%" },
-    { top: "72%", left: "75.5%" },
-    { top: "64%", left: "87%" },
-    { top: "54%", left: "93.5%" },
+    { top: "82.74%", left: "15.12%" },
+    { top: "87.47%", left: "27.63%" },
+    { top: "91.02%", left: "40.15%" },
+    { top: "92.20%", left: "50.05%" },
+    { top: "91.02%", left: "59.96%" },
+    { top: "87.47%", left: "72.47%" },
+    { top: "82.74%", left: "84.46%" },
+    { top: "75.65%", left: "91.24%" }
   ];
 
   return (
@@ -40,7 +39,6 @@ export default function Blackjack() {
         priority
       />
 
-      {/* Dealer */}
       <div
         style={{
           position: "absolute",
@@ -69,7 +67,6 @@ export default function Blackjack() {
         </div>
       </div>
 
-      {/* Jogadores */}
       {jogadores.map((nome, i) => (
         <div
           key={i}

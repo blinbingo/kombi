@@ -46,14 +46,14 @@ export default function BlackjackPage() {
       </div>
 
       {/* Jogadores posicionados responsivamente */}
-      <JogadorMesa top="75%" left="14%" rotate={0} nome="Jogador 1" />
-      <JogadorMesa top="75%" left="29%" rotate={0} nome="Jogador 2" />
-      <JogadorMesa top="75%" left="44%" rotate={0} nome="Jogador 3" />
-      <JogadorMesa top="75%" left="59%" rotate={0} nome="Jogador 4" />
-      <JogadorMesa top="75%" left="74%" rotate={0} nome="Jogador 5" />
-      <JogadorMesa top="75%" left="89%" rotate={0} nome="Jogador 6" />
-      <JogadorMesa top="75%" left="97%" rotate={0} nome="Jogador 7" />
-      <JogadorMesa top="75%" left="99%" rotate={0} nome="Jogador 8" />
+      <JogadorMesa top="75%" left="15%" rotate={0} nome="Jogador 1" />
+      <JogadorMesa top="75%" left="25%" rotate={0} nome="Jogador 2" />
+      <JogadorMesa top="75%" left="35%" rotate={0} nome="Jogador 3" />
+      <JogadorMesa top="75%" left="45%" rotate={0} nome="Jogador 4" />
+      <JogadorMesa top="75%" left="55%" rotate={0} nome="Jogador 5" />
+      <JogadorMesa top="75%" left="65%" rotate={0} nome="Jogador 6" />
+      <JogadorMesa top="75%" left="75%" rotate={0} nome="Jogador 7" />
+      <JogadorMesa top="75%" left="85%" rotate={0} nome="Jogador 8" />
 
       {/* Componente principal do jogo */}
       <MesaJogo />

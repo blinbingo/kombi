@@ -42,8 +42,8 @@ export default function MesaBlackjack() {
       <JogadorMesa top={500} left={440} rotate={35} nome="Jogador 2" />
       <JogadorMesa top={550} left={575} rotate={15} nome="Jogador 3" />
       <JogadorMesa top={575} left={800} rotate={0} nome="Jogador 4" />
-      <JogadorMesa top={575} left={1050} rotate={0} nome="Jogador 5" />
-      <JogadorMesa top={550} left={1250} rotate={0} nome="Jogador 6" />
+      <JogadorMesa top={575} left={1025} rotate={0} nome="Jogador 5" />
+      <JogadorMesa top={550} left={1250} rotate={-15} nome="Jogador 6" />
       <JogadorMesa top={450} left={1340} rotate={-60} nome="Jogador 7" />
       <JogadorMesa top={430} left={1470} rotate={-80} nome="Jogador 8" />
     </div>

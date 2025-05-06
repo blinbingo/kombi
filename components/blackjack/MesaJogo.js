@@ -16,6 +16,15 @@ export default function MesaJogo() {
   const [dealer, setDealer] = useState({ cartas: [] });
   const [jogadorAtual, setJogadorAtual] = useState(0);
   const [jogoFinalizado, setJogoFinalizado] = useState(false);
+  const [jogoIniciado, setJogoIniciado] = useState(false);
+
+  const iniciarRodada = () => {
+    setJogadores(jogadoresIniciais);
+    setDealer({ cartas: [] });
+    setJogadorAtual(0);
+    setJogoFinalizado(false);
+    setJogoIniciado(true);
+  };
 
   const sortearCarta = () => {
     const novaCarta = deck.sortearCarta();
@@ -44,7 +53,7 @@ export default function MesaJogo() {
 
   const pararJogador = () => {
     const atual = jogadores[jogadorAtual];
-    const atualAtualizado = { ...actual, parou: true };
+    const atualAtualizado = { ...atual, parou: true };
     const novosJogadores = [...jogadores];
     novosJogadores[jogadorAtual] = atualAtualizado;
     setJogadores(novosJogadores);
@@ -101,34 +110,46 @@ export default function MesaJogo() {
 
   return (
     <div style={{ textAlign: "center", padding: 20 }}>
-      <h2>Dealer: {dealer.cartas.map((c) => `${c.valor}${c.naipe}`).join(" ")}</h2>
+      {!jogoIniciado && (
+        <button onClick={iniciarRodada} style={{ padding: 12, fontSize: 16 }}>
+          Iniciar Rodada
+        </button>
+      )}
 
-      {jogadores.map((j, index) => (
-        <div
-          key={index}
-          style={{
-            margin: "10px auto",
-            padding: 10,
-            background: jogadorAtual === index ? "#d4f1ff" : "#f0f0f0",
-            borderRadius: 8,
-            width: 300,
-          }}
-        >
-          <strong>{j.nome}</strong>
-          <div>Cartas: {j.cartas.map((c) => `${c.valor}${c.naipe}`).join(" ")}</div>
-          <div>
-            Pontuação: {calcularPontuacao(j.cartas)} {j.estourado && "(Estourou!)"}
-          </div>
-          {jogadorAtual === index && !jogoFinalizado && (
-            <ControleJogador
-              podeJogar={!j.parou && !j.estourado}
-              onSortear={sortearCarta}
-              onParar={pararJogador}
-              onDobrar={dobrarJogador}
-            />
-          )}
-        </div>
-      ))}
+      {jogoIniciado && (
+        <>
+          <h2>
+            Dealer: {dealer.cartas.map((c) => `${c.valor}${c.naipe}`).join(" ") || "?"}
+          </h2>
+
+          {jogadores.map((j, index) => (
+            <div
+              key={index}
+              style={{
+                margin: "10px auto",
+                padding: 10,
+                background: jogadorAtual === index ? "#d4f1ff" : "#f0f0f0",
+                borderRadius: 8,
+                width: 300,
+              }}
+            >
+              <strong>{j.nome}</strong>
+              <div>Cartas: {j.cartas.map((c) => `${c.valor}${c.naipe}`).join(" ")}</div>
+              <div>
+                Pontuação: {calcularPontuacao(j.cartas)} {j.estourado && "(Estourou!)"}
+              </div>
+              {jogadorAtual === index && !jogoFinalizado && (
+                <ControleJogador
+                  podeJogar={!j.parou && !j.estourado}
+                  onSortear={sortearCarta}
+                  onParar={pararJogador}
+                  onDobrar={dobrarJogador}
+                />
+              )}
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 }

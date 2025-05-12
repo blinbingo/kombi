@@ -47,21 +47,23 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
       >
         x2
       </button>
-      <button
-        onClick={onSplit}
-        disabled={!podeJogar}
-        title="Separar"
-        style={{
-          backgroundColor: '#ffb347',
-          borderRadius: 6,
-          border: 'none',
-          padding: '4px 8px',
-          fontWeight: 'bold',
-          fontSize: 16,
-        }}
-      >
-        ⇄
-      </button>
+      {onSplit && (
+        <button
+          onClick={onSplit}
+          disabled={!podeJogar}
+          title="Separar"
+          style={{
+            backgroundColor: '#ffb347',
+            borderRadius: 6,
+            border: 'none',
+            padding: '4px 8px',
+            fontWeight: 'bold',
+            fontSize: 16,
+          }}
+        >
+          ⇄
+        </button>
+      )}
     </div>
   );
 }

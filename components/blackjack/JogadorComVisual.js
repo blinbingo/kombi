@@ -1,3 +1,4 @@
+// components/blackjack/JogadorComVisual.js
 import ControleJogador from './ControleJogador';
 
 export default function JogadorComVisual({ top, left, rotate, dados, isAtual, onSortear, onParar, onDobrar, onSplit }) {
@@ -80,10 +81,4 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
             onSortear={onSortear}
             onParar={onParar}
             onDobrar={onDobrar}
-            onSplit={onSplit}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
+            onSplit={podeSeparar ? onSplit : undefined}

@@ -22,9 +22,7 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
   };
 
   const pontuacao = calcularPontuacao(cartas);
-
-  const podeSeparar =
-    cartas.length === 2 && cartas[0].valor === cartas[1].valor;
+  const podeSeparar = cartas.length === 2 && cartas[0].valor === cartas[1].valor;
 
   return (
     <div
@@ -81,4 +79,10 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
             onSortear={onSortear}
             onParar={onParar}
             onDobrar={onDobrar}
-            onSplit={podeSeparar ? onSplit : undefined}
+            onSplit={onSplit}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

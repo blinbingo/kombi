@@ -1,5 +1,6 @@
-// components/blackjack/JogadorComVisual.js
-export default function JogadorComVisual({ top, left, rotate, dados, isAtual, onSortear, onParar, onDobrar }) {
+import ControleJogador from './ControleJogador';
+
+export default function JogadorComVisual({ top, left, rotate, dados, isAtual, onSortear, onParar, onDobrar, onSplit }) {
   const { nome, cartas, estourado, parou } = dados;
 
   const calcularPontuacao = (cartas) => {
@@ -20,6 +21,9 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
   };
 
   const pontuacao = calcularPontuacao(cartas);
+
+  const podeSeparar =
+    cartas.length === 2 && cartas[0].valor === cartas[1].valor;
 
   return (
     <div
@@ -55,6 +59,7 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
           transform: `rotate(${-rotate}deg)`,
           color: 'white',
           fontSize: 12,
+          textAlign: 'center',
         }}
       >
         {cartas.map((c, i) => (
@@ -66,15 +71,17 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
       {isAtual && !parou && !estourado && (
         <div
           style={{
-            marginTop: 4,
-            display: 'flex',
-            gap: 4,
-            transform: `rotate(${-rotate}deg)`,
+            marginTop: 6,
+            transform: `rotate(${-rotate}deg)`
           }}
         >
-          <button onClick={onSortear}>Pedir</button>
-          <button onClick={onParar}>Parar</button>
-          <button onClick={onDobrar}>Dobrar</button>
+          <ControleJogador
+            podeJogar={true}
+            onSortear={onSortear}
+            onParar={onParar}
+            onDobrar={onDobrar}
+            onSplit={onSplit}
+          />
         </div>
       )}
     </div>

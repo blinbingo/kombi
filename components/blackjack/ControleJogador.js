@@ -1,5 +1,4 @@
-import { Plus, Minus, MoveRight, Divide } from 'lucide-react';
-
+// components/blackjack/ControleJogador.js
 export default function ControleJogador({ podeJogar, onSortear, onParar, onDobrar, onSplit }) {
   return (
     <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
@@ -8,13 +7,15 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
         disabled={!podeJogar}
         title="Pedir"
         style={{
-          backgroundColor: '#6aff6a',
-          borderRadius: 6,
-          border: 'none',
-          padding: 8,
+          backgroundColor: '#ff00ff',
+          borderRadius: 0,
+          border: '4px solid yellow',
+          padding: '20px',
+          fontWeight: 'bold',
+          fontSize: 24,
         }}
       >
-        <Plus size={16} />
+        TESTE
       </button>
       <button
         onClick={onParar}
@@ -25,9 +26,10 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           borderRadius: 6,
           border: 'none',
           padding: 8,
+          fontWeight: 'bold',
         }}
       >
-        <Minus size={16} />
+        −
       </button>
       <button
         onClick={onDobrar}
@@ -38,9 +40,10 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           borderRadius: 6,
           border: 'none',
           padding: 8,
+          fontWeight: 'bold',
         }}
       >
-        <MoveRight size={16} />
+        x2
       </button>
       <button
         onClick={onSplit}
@@ -51,9 +54,10 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           borderRadius: 6,
           border: 'none',
           padding: 8,
+          fontWeight: 'bold',
         }}
       >
-        <Divide size={16} />
+        ⇄
       </button>
     </div>
   );

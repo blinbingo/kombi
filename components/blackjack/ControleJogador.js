@@ -14,7 +14,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
         }}
         title="Pedir Carta"
       >
-        {'\u002B'}
+        +
       </button>
       <button
         onClick={onParar}
@@ -28,7 +28,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
         }}
         title="Parar"
       >
-        {'\u2212'}
+        −
       </button>
       <button
         onClick={onDobrar}
@@ -56,7 +56,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
         }}
         title="Separar"
       >
-        {'\u21C4'}
+        ⇄
       </button>
     </div>
   );

@@ -2,7 +2,7 @@
 import ControleJogador from './ControleJogador';
 
 export default function JogadorComVisual({ top, left, rotate, dados, isAtual, onSortear, onParar, onDobrar, onSplit }) {
-  const { nome, cartas, estourado, parou } = dados;
+  const { nome, cartas, estourado, parou, maoExtra, jogandoMaoExtra } = dados;
 
   const calcularPontuacao = (cartas) => {
     let total = 0;
@@ -21,8 +21,40 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
     return total;
   };
 
-  const pontuacao = calcularPontuacao(cartas);
   const podeSeparar = cartas.length === 2 && cartas[0].valor === cartas[1].valor;
+
+  const renderMao = (mao, label, isAtiva) => {
+    const pontuacao = calcularPontuacao(mao.cartas);
+
+    return (
+      <div
+        style={{
+          marginTop: 6,
+          transform: `rotate(${-rotate}deg)`,
+          textAlign: 'center',
+          color: 'white',
+        }}
+      >
+        <div style={{ fontWeight: 'bold', marginBottom: 2 }}>{label}</div>
+        <div style={{ fontSize: 12 }}>
+          {mao.cartas.map((c, i) => (
+            <span key={i}>{c.valor}{c.naipe} </span>
+          ))}<br />
+          Pontos: {pontuacao} {mao.estourado && '(Estourou!)'}
+        </div>
+        {isAtiva && !mao.parou && !mao.estourado && (
+          <ControleJogador
+            podeJogar={true}
+            onSortear={onSortear}
+            onParar={onParar}
+            onDobrar={onDobrar}
+            onSplit={podeSeparar ? onSplit : undefined}
+            podeSeparar={podeSeparar}
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <div
@@ -52,38 +84,13 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
         {nome}
       </div>
 
-      <div
-        style={{
-          marginTop: 4,
-          transform: `rotate(${-rotate}deg)`,
-          color: 'white',
-          fontSize: 12,
-          textAlign: 'center',
-        }}
-      >
-        {cartas.map((c, i) => (
-          <span key={i}>{c.valor}{c.naipe} </span>
-        ))}<br />
-        {pontuacao > 0 && `Pontos: ${pontuacao}`} {estourado && '(Estourou!)'}
-      </div>
-
-      {isAtual && !parou && !estourado && (
-        <div
-          style={{
-            marginTop: 6,
-            transform: `rotate(${-rotate}deg)`
-          }}
-        >
-         <ControleJogador
-  podeJogar={true}
-  onSortear={onSortear}
-  onParar={onParar}
-  onDobrar={onDobrar}
-  onSplit={onSplit}
-  podeSeparar={podeSeparar}
-/>
-
-        </div>
+      {maoExtra ? (
+        <>
+          {renderMao(dados, 'Mão 1', isAtual && !jogandoMaoExtra)}
+          {renderMao(maoExtra, 'Mão 2', isAtual && jogandoMaoExtra)}
+        </>
+      ) : (
+        renderMao(dados, '', isAtual)
       )}
     </div>
   );

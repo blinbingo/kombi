@@ -1,21 +1,21 @@
 // components/blackjack/ControleJogador.js
 export default function ControleJogador({ podeJogar, onSortear, onParar, onDobrar, onSplit }) {
   return (
-    <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+    <div style={{ marginTop: 6, display: 'flex', gap: 6 }}>
       <button
         onClick={onSortear}
         disabled={!podeJogar}
         title="Pedir"
         style={{
-          backgroundColor: '#ff00ff',
-          borderRadius: 0,
-          border: '4px solid yellow',
-          padding: '20px',
+          backgroundColor: '#6aff6a',
+          borderRadius: 6,
+          border: 'none',
+          padding: '4px 8px',
           fontWeight: 'bold',
-          fontSize: 24,
+          fontSize: 16,
         }}
       >
-        TESTE
+        +
       </button>
       <button
         onClick={onParar}
@@ -25,8 +25,9 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           backgroundColor: '#ff6a6a',
           borderRadius: 6,
           border: 'none',
-          padding: 8,
+          padding: '4px 8px',
           fontWeight: 'bold',
+          fontSize: 16,
         }}
       >
         −
@@ -39,8 +40,9 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           backgroundColor: '#6aa8ff',
           borderRadius: 6,
           border: 'none',
-          padding: 8,
+          padding: '4px 8px',
           fontWeight: 'bold',
+          fontSize: 16,
         }}
       >
         x2
@@ -53,8 +55,9 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           backgroundColor: '#ffb347',
           borderRadius: 6,
           border: 'none',
-          padding: 8,
+          padding: '4px 8px',
           fontWeight: 'bold',
+          fontSize: 16,
         }}
       >
         ⇄

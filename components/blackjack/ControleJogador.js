@@ -12,6 +12,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           padding: '6px 10px',
           fontWeight: 'bold',
         }}
+        title="Pedir Carta"
       >
         +
       </button>
@@ -25,6 +26,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           padding: '6px 10px',
           fontWeight: 'bold',
         }}
+        title="Parar"
       >
         −
       </button>
@@ -38,6 +40,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           padding: '6px 10px',
           fontWeight: 'bold',
         }}
+        title="Dobrar"
       >
         x2
       </button>
@@ -51,6 +54,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
           padding: '6px 10px',
           fontWeight: 'bold',
         }}
+        title="Separar"
       >
         ⇄
       </button>

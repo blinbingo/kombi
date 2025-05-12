@@ -1,5 +1,12 @@
 // components/blackjack/ControleJogador.js
-export default function ControleJogador({ podeJogar, onSortear, onParar, onDobrar, onSplit }) {
+export default function ControleJogador({
+  podeJogar,
+  onSortear,
+  onParar,
+  onDobrar,
+  onSplit,
+  podeSeparar
+}) {
   return (
     <div style={{ marginTop: 6, display: 'flex', gap: 6 }}>
       <button
@@ -47,7 +54,7 @@ export default function ControleJogador({ podeJogar, onSortear, onParar, onDobra
       >
         x2
       </button>
-      {onSplit && (
+      {podeSeparar && (
         <button
           onClick={onSplit}
           disabled={!podeJogar}

@@ -74,13 +74,15 @@ export default function JogadorComVisual({ top, left, rotate, dados, isAtual, on
             transform: `rotate(${-rotate}deg)`
           }}
         >
-          <ControleJogador
-            podeJogar={true}
-            onSortear={onSortear}
-            onParar={onParar}
-            onDobrar={onDobrar}
-            onSplit={onSplit}
-          />
+         <ControleJogador
+  podeJogar={true}
+  onSortear={onSortear}
+  onParar={onParar}
+  onDobrar={onDobrar}
+  onSplit={onSplit}
+  podeSeparar={podeSeparar}
+/>
+
         </div>
       )}
     </div>
